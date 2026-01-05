@@ -1,0 +1,84 @@
+name: Scraper Automático de Partidos
+
+on:
+  # Ejecutar todos los lunes a las 8:00 AM (hora UTC = 9:00 AM Canarias)
+  schedule:
+    - cron: '0 8 * * 1'
+  
+  # También permitir ejecución manual
+  workflow_dispatch:
+
+jobs:
+  scrape_and_export:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout del repositorio
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+    
+    - name: Configurar Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Ejecutar scraper
+      run: |
+        python scraper_baloncesto.py
+    
+    - name: Obtener nombre del PDF generado
+      id: get_pdf
+      run: |
+        PDF_FILE=$(ls PARTIDOS_VALSEQUILLO_*.pdf | head -n 1)
+        echo "pdf_name=$PDF_FILE" >> $GITHUB_OUTPUT
+        echo "Archivo PDF: $PDF_FILE"
+    
+    - name: Enviar email con PDF adjunto
+      if: success()
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 587
+        secure: true
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: '🏀 Partidos Valsequillo - ${{ github.run_number }}'
+        to: ${{ secrets.EMAIL_TO }}
+        from: CB Valsequillo Scraper
+        html_body: |
+          <h2>🏀 Partidos del CB Valsequillo</h2>
+          <p>Hola,</p>
+          <p>Te adjunto el PDF con los próximos partidos de Valsequillo.</p>
+          <p><strong>Generado automáticamente:</strong> ${{ github.event.repository.updated_at }}</p>
+          <hr>
+          <p style="color: #2D8B3C;"><strong>Club de Baloncesto Valsequillo - Roque Grande</strong></p>
+          <p style="font-size: 12px; color: #666;">Este email se envía automáticamente cada lunes.</p>
+        attachments: ${{ steps.get_pdf.outputs.pdf_name }}
+    
+    - name: Subir resultados como artefacto (backup)
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: partidos-valsequillo-${{ github.run_number }}
+        path: |
+          PARTIDOS_*.pdf
+          partidos_*.xlsx
+          jornada_*.pdf
+        retention-days: 30
+    
+    - name: Commit y push de resultados (opcional)
+      if: success()
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add -A *.xlsx || true
+        git diff --quiet && git diff --staged --quiet || (git commit -m "📊 Actualización automática de partidos - $(date +'%Y-%m-%d')" && git push)
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
