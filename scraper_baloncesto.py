@@ -36,9 +36,21 @@ class ScraperBaloncesto:
         self.url_base = url_base
         self.url_jornadas = "https://www.fibgrancanaria.com/index.php/competicion/hojas-de-jornada"
         self.session = requests.Session()
+        
+        # Headers mejorados para compatibilidad con servidores
         self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1'
         })
+        
+        # Configuración SSL más permisiva para servidores con certificados antiguos
+        import ssl
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         
     def descargar_ultimo_pdf(self) -> Optional[Path]:
         """
@@ -49,7 +61,7 @@ class ScraperBaloncesto:
         """
         try:
             logger.info(f"Accediendo a {self.url_jornadas}")
-            response = self.session.get(self.url_jornadas, timeout=30)
+            response = self.session.get(self.url_jornadas, timeout=30, verify=False)
             response.raise_for_status()
             
             soup = BeautifulSoup(response.content, 'html.parser')
@@ -86,7 +98,7 @@ class ScraperBaloncesto:
             
             # Descargar el PDF
             logger.info(f"Descargando PDF desde: {download_link}")
-            pdf_response = self.session.get(download_link, timeout=30)
+            pdf_response = self.session.get(download_link, timeout=30, verify=False)
             pdf_response.raise_for_status()
             
             # Guardar el PDF
