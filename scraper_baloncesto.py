@@ -23,8 +23,12 @@ from reportlab.lib.units import cm
 
 # Configuración de logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("scraper.log", encoding='utf-8'),
+        logging.StreamHandler()
+    ]
 )
 logger = logging.getLogger(__name__)
 
@@ -52,12 +56,12 @@ class ScraperBaloncesto:
         import urllib3
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         
-    def descargar_ultimo_pdf(self) -> Optional[Path]:
+    def descargar_pdfs_recientes(self) -> List[Dict]:
         """
-        Accede a la página de hojas de jornada y descarga el PDF más reciente
+        Descarga las jornadas más recientes (definitivas y provisionales)
         
         Returns:
-            Path al archivo PDF descargado o None si falla
+            Lista de diccionarios con info de PDFs descargados
         """
         try:
             logger.info(f"Accediendo a {self.url_jornadas}")
@@ -73,210 +77,237 @@ class ScraperBaloncesto:
             # Buscar todos los enlaces que contengan el parámetro '?download='
             download_links = soup.find_all('a', href=re.compile(r'\?download=', re.I))
             
-            if download_links:
-                # Filtrar para obtener solo jornadas definitivas (más confiables)
-                definitivas = [
-                    link for link in download_links 
-                    if 'definitiva' in link.get_text().lower()
-                ]
-                
-                # Si hay definitivas, usar la primera; si no, usar el primer enlace disponible
-                selected_link = definitivas[0] if definitivas else download_links[0]
-                download_link = selected_link.get('href')
-                titulo = selected_link.get_text().strip()
-                
-                logger.info(f"PDF seleccionado: {titulo}")
-                logger.info(f"Enlace de descarga: {download_link}")
-            
-            if not download_link:
+            if not download_links:
                 logger.error("No se encontró ningún enlace de descarga en la página")
-                return None
+                return []
             
-            # Normalizar URL
-            if not download_link.startswith('http'):
-                download_link = f"{self.url_base}{download_link}" if download_link.startswith('/') else f"{self.url_base}/{download_link}"
+            # Filtrar para obtener definitivas Y provisionales (las 3 jornadas más recientes)
+            jornadas_recientes = []
+            for link in download_links[:15]:  # Ampliar búsqueda a 15
+                texto = link.get_text().lower()
+                logger.info(f"Analizando enlace: {link.get_text().strip()}")
+                
+                # Ignorar Minibasket
+                if 'minibasket' in texto or 'preminibasket' in texto:
+                    logger.info("   -> Ignorado (Minibasket)")
+                    continue
+                
+                if 'jornada' in texto and ('definitiva' in texto or 'provisional' in texto):
+                    jornadas_recientes.append({
+                        'link': link,
+                        'href': link.get('href'),
+                        'titulo': link.get_text().strip(),
+                        'tipo': 'DEFINITIVA' if 'definitiva' in texto else 'PROVISIONAL'
+                    })
             
-            # Descargar el PDF
-            logger.info(f"Descargando PDF desde: {download_link}")
-            pdf_response = self.session.get(download_link, timeout=30, verify=False)
-            pdf_response.raise_for_status()
+            # Tomar las 3 más recientes (o menos si no hay tantas)
+            jornadas_a_procesar = jornadas_recientes[:3]
             
-            # Guardar el PDF
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            pdf_path = Path(f"jornada_{timestamp}.pdf")
-            pdf_path.write_bytes(pdf_response.content)
+            if not jornadas_a_procesar:
+                logger.error("No se encontraron jornadas definitivas ni provisionales")
+                return []
             
-            logger.info(f"PDF descargado exitosamente: {pdf_path}")
-            return pdf_path
+            logger.info(f"Se encontraron {len(jornadas_a_procesar)} jornadas para procesar:")
+            for j in jornadas_a_procesar:
+                logger.info(f"  - {j['titulo']} ({j['tipo']})")
+            
+            # Descargar y procesar TODAS las jornadas encontradas
+            pdfs_descargados = []
+            for jornada in jornadas_a_procesar:
+                download_link = jornada['href']
+                
+                # Normalizar URL
+                if not download_link.startswith('http'):
+                    download_link = f"{self.url_base}{download_link}" if download_link.startswith('/') else f"{self.url_base}/{download_link}"
+                
+                try:
+                    # Descargar el PDF
+                    logger.info(f"Descargando: {jornada['titulo']}")
+                    pdf_response = self.session.get(download_link, timeout=30, verify=False)
+                    pdf_response.raise_for_status()
+                    
+                    # Guardar el PDF
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    tipo_sufijo = jornada['tipo'].lower()
+                    pdf_path = Path(f"jornada_{tipo_sufijo}_{timestamp}.pdf")
+                    pdf_path.write_bytes(pdf_response.content)
+                    
+                    pdfs_descargados.append({
+                        'path': pdf_path,
+                        'tipo': jornada['tipo'],
+                        'titulo': jornada['titulo']
+                    })
+                    
+                    logger.info(f"PDF descargado: {pdf_path}")
+                    
+                except Exception as e:
+                    logger.warning(f"Error al descargar {jornada['titulo']}: {e}")
+                    continue
+            
+            if not pdfs_descargados:
+                logger.error("No se pudo descargar ningún PDF")
+                return []
+            
+            logger.info(f"Total de PDFs descargados: {len(pdfs_descargados)}")
+            return pdfs_descargados
             
         except requests.RequestException as e:
-            logger.error(f"Error al descargar el PDF: {e}")
-            return None
+            logger.error(f"Error al descargar los PDFs: {e}")
+            return []
         except Exception as e:
             logger.error(f"Error inesperado: {e}")
-            return None
+            return []
     
+    def descargar_ultimo_pdf(self) -> Optional[Path]:
+        """
+        Método legacy - mantener compatibilidad
+        Descarga el primer PDF y retorna su ruta
+        """
+        pdfs = self.descargar_pdfs_recientes()
+        return pdfs[0]['path'] if pdfs else None
+            
     def extraer_partidos_pdf(self, pdf_path: Path) -> List[Dict]:
         """
         Extrae información de partidos del PDF usando PyMuPDF
         El PDF tiene formato multi-línea donde cada partido ocupa 4 líneas:
         Línea 1: Nº Part + Hora + Categoría
         Línea 2: Equipo Local (con código)
-        Línea 3: Equipo Visitante (con código)
-        Línea 4: Lugar
-        
-        Args:
-            pdf_path: Ruta al archivo PDF
-            
-        Returns:
-            Lista de diccionarios con información de partidos
+        Extrae información de partidos del PDF usando heurísticas de texto.
+        Busca 'Valsequillo' y deduce el contexto (rival, categoría, lugar) basado en la estructura.
         """
         partidos = []
-        partidos_unicos = set()  # Para evitar duplicados
-        dia_actual = None
-        
         try:
-            logger.info(f"Procesando PDF: {pdf_path}")
             doc = fitz.open(pdf_path)
             
-            for page_num in range(len(doc)):
-                page = doc[page_num]
-                text = page.get_text()
-                
-                # Dividir en líneas
-                lines = [line.strip() for line in text.split('\n')]
-                
-                # Días de la semana para detectar
-                dias_semana = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
-                
-                i = 0
-                while i < len(lines):
-                    line = lines[i]
-                    
-                    if not line:
-                        i += 1
-                        continue
-                    
-                    # Detectar encabezados de día
-                    line_lower = line.lower()
-                    for dia in dias_semana:
-                        if line_lower.startswith(dia) or (dia in line_lower and len(line) < 50):
-                            # Verificar si no es parte de un partido
-                            if not re.search(r'\d{1,2}:\d{2}', line):
-                                dia_actual = line
-                                logger.info(f"Día detectado: {dia_actual}")
-                                break
-                    
-                    # Verificar si la línea actual o las siguientes 3 contienen "Valsequillo"
-                    siguiente_4_lineas = lines[i:i+4]
-                    contiene_valsequillo = any('valsequillo' in l.lower() for l in siguiente_4_lineas)
-                    
-                    if contiene_valsequillo:
-                        # Intentar reconstruir el partido desde las próximas líneas
-                        partido = self._parsear_partido_multilinea(lines, i, dia_actual)
-                        if partido:
-                            # Crear clave única para evitar duplicados (hora + local + visitante)
-                            clave_unica = (partido['hora'], partido['local'].lower(), partido['visitante'].lower())
-                            
-                            if clave_unica not in partidos_unicos:
-                                partidos.append(partido)
-                                partidos_unicos.add(clave_unica)
-                                logger.info(f"Partido encontrado: {partido}")
-                            else:
-                                logger.debug(f"Partido duplicado omitido: {partido}")
-                            
-                            i += 4  # Saltar las líneas ya procesadas
-                            continue
-                    
-                    i += 1
+            # Patrón para detectar códigos de equipo: (35xxxxxx) o similar
+            patron_codigo = re.compile(r'\(\d+\)$')
             
-            doc.close()
-            logger.info(f"Total de partidos de Valsequillo encontrados: {len(partidos)}")
+            for num_pagina, page in enumerate(doc):
+                text = page.get_text()
+                lines = [l.strip() for l in text.split('\n') if l.strip()]
+                
+                # Detectar día de la semana en la página (a veces está al principio)
+                dia_actual = "Desconocido"
+                dias_semana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+                
+                # Buscar Valsequillo
+                for i, line in enumerate(lines):
+                    # Actualizar día si encontramos uno en la línea
+                    for d in dias_semana:
+                        # Verificamos que la línea sea principalmente el día (ej: "Sábado", "Sábado 17")
+                        # y no una frase larga que contenga el día
+                        if d in line and len(line) < 30:
+                            dia_actual = d
+                            # A veces viene acompañado de fecha (ej: "Viernes (16/01/26)")
+                            # Podríamos extraerla también si quisiéramos
+                            break
+
+                    if "valsequillo" in line.lower():
+                        logger.debug(f"Encontrado Valsequillo en línea {i}: {line}")
+                        
+                        # Es posible que sea el "Lugar" (IES Valsequillo)
+                        # Si es Lugar, el partido ya debería haber sido procesado por el equipo, 
+                        # pero si el equipo NO tiene "Valsequillo" en el nombre (raro), lo ignoramos.
+                        # Generalmente queremos encontrar el EQUIPO Valsequillo.
+                        # IES Valsequillo no tiene código (xxxx) al final.
+                        es_equipo = bool(patron_codigo.search(line))
+                        
+                        if not es_equipo:
+                            # Puede ser el lugar. Verificamos si ya procesamos este partido
+                            # O simplemente lo ignoramos porque buscamos el nombre del equipo
+                            continue
+
+                        # Analizar contexto
+                        categoria = "Desconocida"
+                        local = "Desconocido"
+                        visitante = "Desconocido"
+                        lugar = "Desconocido"
+                        hora = "00:00"
+                        
+                        # Mirar línea anterior y siguiente para decidir si somos Local o Visitante
+                        linea_ant = lines[i-1] if i > 0 else ""
+                        linea_sig = lines[i+1] if i < len(lines)-1 else ""
+                        
+                        es_local = False
+                        
+                        # Si la línea siguiente tiene código, entonces somos Local
+                        if patron_codigo.search(linea_sig):
+                            es_local = True
+                            local = line
+                            visitante = linea_sig
+                            lugar = lines[i+2] if i < len(lines)-2 else "Desconocido"
+                            categoria_raw = linea_ant
+                        
+                        # Si la línea anterior tiene código, entonces somos Visitante
+                        elif patron_codigo.search(linea_ant):
+                            es_local = False
+                            local = linea_ant
+                            visitante = line
+                            lugar = linea_sig
+                            categoria_raw = lines[i-2] if i > 1 else "Desconocido"
+                            
+                        else:
+                            # Caso difícil. Asumir Local por defecto si no hay pistas
+                            logger.warning(f"No se pudo determinar si es local o visitante: {line}")
+                            local = line
+                            visitante = linea_sig # Asumimos siguiente es rival
+                            lugar = lines[i+2] if i < len(lines)-2 else "Desconocido"
+                            categoria_raw = linea_ant
+
+                        # Limpiar categoría y extraer hora
+                        # A veces la categoría tiene basura pegada o la hora
+                        # Buscar patrón de hora HH:MM
+                        match_hora = re.search(r'(\d{2}:\d{2})', categoria_raw)
+                        if match_hora:
+                            hora = match_hora.group(1)
+                            categoria = categoria_raw.replace(hora, "").strip()
+                        else:
+                            # Buscar hora en líneas muy cercanas hacia arriba (hasta 5 líneas)
+                            for k in range(1, 6):
+                                if i-k >= 0:
+                                    possible_hora = lines[i-k]
+                                    match_hora = re.search(r'(\d{2}:\d{2})', possible_hora)
+                                    if match_hora:
+                                        hora = match_hora.group(1)
+                                        # Si encontramos la hora muy arriba, la categoría es probable que sea la línea justo encima del Local
+                                        if categoria == "Desconocida":
+                                            categoria = categoria_raw
+                                        break
+                            if categoria == "Desconocida":
+                                categoria = categoria_raw
+
+                        # Limpieza final
+                        if len(categoria) > 50: categoria = categoria[:50] + "..."
+                        
+                        # Añadir partido
+                        partido = {
+                            'dia': dia_actual,
+                            'hora': hora,
+                            'categoria': categoria,
+                            'local': local,
+                            'visitante': visitante,
+                            'lugar': lugar,
+                            'origen': f"Página {num_pagina+1}"
+                        }
+                        
+                        # Evitar duplicados (mismo equipo y hora)
+                        clave = f"{dia_actual}_{hora}_{local}_{visitante}"
+                        duplicado = False
+                        for p in partidos:
+                            k = f"{p['dia']}_{p['hora']}_{p['local']}_{p['visitante']}"
+                            if k == clave:
+                                duplicado = True
+                                break
+                        
+                        if not duplicado:
+                            partidos.append(partido)
+                            logger.info(f"Partido encontrado: {local} vs {visitante} ({dia_actual} {hora})")
+
             return partidos
             
         except Exception as e:
-            logger.error(f"Error al procesar el PDF: {e}")
+            logger.error(f"Error al extraer partidos del PDF {pdf_path}: {e}")
             return []
-    
-    def _parsear_partido_multilinea(self, lines: List[str], start_idx: int, dia: Optional[str]) -> Optional[Dict]:
-        """
-        Parsea un partido que está en formato multi-línea:
-        Línea start_idx: Nº Part + Hora + Categoría
-        Línea start_idx+1: Equipo Local
-        Línea start_idx+2: Equipo Visitante
-        Línea start_idx+3: Lugar
-        
-        Args:
-            lines: Lista completa de líneas
-            start_idx: Índice de inicio del partido
-            dia: Día de la semana
-            
-        Returns:
-            Diccionario con información del partido o None
-        """
-        try:
-            # Necesitamos encontrar la línea que tiene Nº + Hora + Categoría
-            # Buscar hacia atrás y adelante desde start_idx
-            
-            linea_hora = None
-            linea_local = None
-            linea_visitante = None
-            linea_lugar = None
-            
-            # Buscar en un rango de ±2 líneas la línea con hora
-            for offset in range(-2, 3):
-                idx = start_idx + offset
-                if 0 <= idx < len(lines):
-                    if re.search(r'\d{1,2}:\d{2}', lines[idx]):
-                        linea_hora = lines[idx]
-                        # Ahora las siguientes 3 líneas deben ser local, visitante, lugar
-                        if idx + 3 < len(lines):
-                            candidatos = [lines[idx+1], lines[idx+2], lines[idx+3]]
-                            # Verificar que al menos una contenga "Valsequillo"
-                            if any('valsequillo' in c.lower() for c in candidatos):
-                                linea_local = lines[idx+1]
-                                linea_visitante = lines[idx+2]
-                                linea_lugar = lines[idx+3]
-                                break
-            
-            if not linea_hora or not linea_local or not linea_visitante:
-                return None
-            
-            # Parsear hora y categoría
-            hora_match = re.search(r'\b(\d{1,2}:\d{2})\b', linea_hora)
-            hora = hora_match.group(1) if hora_match else "Sin especificar"
-            
-            # Extraer categoría (después de la hora)
-            if hora_match:
-                despues_hora = linea_hora[hora_match.end():].strip()
-                # La categoría es todo lo que queda después de eliminar el número de partido
-                categoria = re.sub(r'^\d+\s*', '', despues_hora).strip()
-            else:
-                categoria = "Sin especificar"
-            
-            # Limpiar nombres de equipos (quitar códigos entre paréntesis)
-            local = re.sub(r'\s*\([0-9]+\)\s*', '', linea_local).strip()
-            visitante = re.sub(r'\s*\([0-9]+\)\s*', '', linea_visitante).strip()
-            lugar = linea_lugar.strip() if linea_lugar else "Sin especificar"
-            
-            # Limpiar símbolos extraños
-            local = re.sub(r'[&*]+\s*$', '', local).strip()
-            visitante = re.sub(r'[&*]+\s*$', '', visitante).strip()
-            
-            partido = {
-                'dia': dia if dia else 'Sin especificar',
-                'hora': hora,
-                'categoria': categoria,
-                'local': local,
-                'visitante': visitante,
-                'lugar': lugar
-            }
-            
-            return partido
-            
-        except Exception as e:
-            logger.warning(f"Error al parsear partido multi-línea: {e}")
-            return None
     
     def _parsear_linea_tabla(self, line: str, dia: Optional[str]) -> Optional[Dict]:
         """
@@ -528,8 +559,18 @@ class ScraperBaloncesto:
             # Crear DataFrame
             df = pd.DataFrame(partidos)
             
-            # Renombrar columnas para mejor presentación
-            df.columns = ['Día', 'Hora', 'Categoría', 'Equipo Local', 'Equipo Visitante', 'Pabellón/Lugar']
+            # Asegurar que existan las columnas esperadas y en el orden correcto
+            # Si existe jornada_tipo, incluirla
+            columnas = ['dia', 'hora', 'categoria', 'local', 'visitante', 'lugar']
+            nombres_columnas = ['Día', 'Hora', 'Categoría', 'Equipo Local', 'Equipo Visitante', 'Pabellón/Lugar']
+            
+            if 'jornada_tipo' in df.columns:
+                columnas.insert(0, 'jornada_tipo')
+                nombres_columnas.insert(0, 'Tipo Jornada')
+            
+            # Seleccionar y reordenar columnas
+            df = df[columnas]
+            df.columns = nombres_columnas
             
             # Guardar a Excel
             excel_path = Path(nombre_archivo)
@@ -544,21 +585,22 @@ class ScraperBaloncesto:
             logger.error(f"Error al generar Excel: {e}")
             raise
     
-    def generar_pdf(self, partidos: List[Dict]) -> Path:
+    def generar_pdf(self, partidos: List[Dict], tipo_jornada: str = "") -> Path:
         """
         Genera un archivo PDF con los partidos filtrados
-        Formato de nombre: PARTIDOS_VALSEQUILLO_DD_MM.pdf
         
         Args:
             partidos: Lista de partidos
+            tipo_jornada: Tipo de jornada (DEFINITIVA o PROVISIONAL) para el nombre del archivo
             
         Returns:
             Path al archivo PDF generado
         """
         try:
-            # Generar nombre de archivo con formato DIA_MES
             now = datetime.now()
-            nombre_archivo = f"PARTIDOS_VALSEQUILLO_{now.strftime('%d_%m')}.pdf"
+            # Nombre del archivo incluye el tipo si se especifica
+            sufijo_tipo = f"_{tipo_jornada}" if tipo_jornada else ""
+            nombre_archivo = f"PARTIDOS_VALSEQUILLO{sufijo_tipo}_{now.strftime('%d_%m')}.pdf"
             pdf_path = Path(nombre_archivo)
             
             # Crear el documento PDF en orientación horizontal (landscape)
@@ -643,12 +685,25 @@ class ScraperBaloncesto:
                     logger.warning(f"No se pudo cargar el logo: {e}")
             
             # Título
-            title = Paragraph("PARTIDOS DE VALSEQUILLO", title_style)
+            titulo_texto = f"PARTIDOS DE VALSEQUILLO {tipo_jornada}" if tipo_jornada else "PARTIDOS DE VALSEQUILLO"
+            title = Paragraph(titulo_texto, title_style)
             elements.append(title)
             
             # Subtítulo con fecha de generación
+            # Contar cuántos son definitivas y cuántos provisionales
+            definitivas_count = sum(1 for p in partidos if p.get('jornada_tipo') == 'DEFINITIVA')
+            provisionales_count = sum(1 for p in partidos if p.get('jornada_tipo') == 'PROVISIONAL')
+            
+            tipos_texto = []
+            if definitivas_count > 0:
+                tipos_texto.append(f"{definitivas_count} definitiva{'s' if definitivas_count > 1 else ''}")
+            if provisionales_count > 0:
+                tipos_texto.append(f"{provisionales_count} provisional{'es' if provisionales_count > 1 else ''}")
+            
+            jornadas_info = " + ".join(tipos_texto) if tipos_texto else "Jornadas"
+            
             subtitle = Paragraph(
-                f"Jornada - Generado el {now.strftime('%d/%m/%Y a las %H:%M')}",
+                f"{jornadas_info} - Generado el {now.strftime('%d/%m/%Y a las %H:%M')}",
                 subtitle_style
             )
             elements.append(subtitle)
@@ -765,49 +820,83 @@ class ScraperBaloncesto:
             logger.error(f"Error al generar PDF: {e}")
             raise
     
-    def ejecutar(self) -> Optional[Path]:
+    def ejecutar(self) -> List[Path]:
         """
-        Ejecuta el proceso completo: descarga, extracción y generación de Excel
+        Ejecuta el proceso completo: descarga múltiples jornadas, extracción y generación de PDFs independientes
         
         Returns:
-            Path al archivo PDF generado o None si falla
+            Lista de paths de los archivos PDF generados
         """
         logger.info("=== Iniciando proceso de extracción de partidos ===")
         
-        # 1. Descargar PDF
-        pdf_path = self.descargar_ultimo_pdf()
-        if not pdf_path:
-            logger.error("No se pudo descargar el PDF")
-            return None
+        # 1. Descargar PDFs recientes (definitivas y provisionales)
+        pdfs_descargados = self.descargar_pdfs_recientes()
+        if not pdfs_descargados:
+            logger.error("No se pudo descargar ningún PDF")
+            return []
         
-        # 2. Extraer partidos
-        partidos = self.extraer_partidos_pdf(pdf_path)
-        if not partidos:
-            logger.warning("No se encontraron partidos de Valsequillo")
-            return None
+        # 2. Extraer partidos de TODOS los PDFs
+        todos_los_partidos = []
+        for pdf_info in pdfs_descargados:
+            pdf_path = pdf_info['path']
+            tipo = pdf_info['tipo']
+            logger.info(f"Procesando {tipo}: {pdf_path}")
+            
+            partidos = self.extraer_partidos_pdf(pdf_path)
+            
+            # Marcar los partidos con el tipo de jornada
+            for partido in partidos:
+                partido['jornada_tipo'] = tipo
+            
+            todos_los_partidos.extend(partidos)
         
-        # 3. Generar Excel
-        excel_path = self.generar_excel(partidos)
-        logger.info(f"Archivo Excel: {excel_path}")
+        if not todos_los_partidos:
+            logger.warning("No se encontraron partidos de Valsequillo en ninguna jornada")
+            return []
         
-        # 4. Generar PDF
-        pdf_partidos_path = self.generar_pdf(partidos)
-        logger.info(f"Archivo PDF: {pdf_partidos_path}")
+        logger.info(f"Total de partidos de Valsequillo encontrados: {len(todos_los_partidos)}")
         
+        # 3. Generar Excel con todos los partidos (para tener un registro completo)
+        excel_path = self.generar_excel(todos_los_partidos)
+        logger.info(f"Archivo Excel global: {excel_path}")
+        
+        # 4. Separar y generar PDFs independientes
+        pdfs_generados = []
+        
+        # Filtrar por tipo
+        partidos_definitivos = [p for p in todos_los_partidos if p.get('jornada_tipo') == 'DEFINITIVA']
+        partidos_provisionales = [p for p in todos_los_partidos if p.get('jornada_tipo') == 'PROVISIONAL']
+        
+        # Generar PDF Definitiva
+        if partidos_definitivos:
+            logger.info(f"Generando PDF Definitiva ({len(partidos_definitivos)} partidos)...")
+            pdf_def = self.generar_pdf(partidos_definitivos, "DEFINITIVA")
+            pdfs_generados.append(pdf_def)
+            logger.info(f" PDF Definitiva: {pdf_def}")
+        
+        # Generar PDF Provisional
+        if partidos_provisionales:
+            logger.info(f"Generando PDF Provisional ({len(partidos_provisionales)} partidos)...")
+            pdf_prov = self.generar_pdf(partidos_provisionales, "PROVISIONAL")
+            pdfs_generados.append(pdf_prov)
+            logger.info(f" PDF Provisional: {pdf_prov}")
+            
         logger.info("=== Proceso completado exitosamente ===")
         
-        return pdf_partidos_path
+        return pdfs_generados
 
 
 def main():
     """Función principal"""
     try:
         scraper = ScraperBaloncesto()
-        pdf_path = scraper.ejecutar()
+        pdfs_generados = scraper.ejecutar()
         
-        if pdf_path:
-            print(f"\n✅ ¡Éxito! Partidos exportados a PDF: {pdf_path}")
-            print(f"   (También se generó un archivo Excel)")
+        if pdfs_generados:
+            print(f"\n✅ ¡Éxito! Se generaron {len(pdfs_generados)} archivos PDF:")
+            for pdf in pdfs_generados:
+                print(f"   📄 {pdf}")
+            print(f"   (También se generó un archivo Excel global)")
         else:
             print("\n❌ No se pudo completar el proceso")
             
