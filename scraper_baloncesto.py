@@ -10,10 +10,13 @@ from bs4 import BeautifulSoup
 import fitz  # PyMuPDF
 import pandas as pd
 import re
+import ssl
+import csv
+from datetime import datetime, timedelta
 from pathlib import Path
-from datetime import datetime
-import logging
 from typing import List, Dict, Optional
+import urllib3
+from ics import Calendar, Event # Para generar calendariome
 import time
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, landscape
@@ -194,12 +197,14 @@ class ScraperBaloncesto:
                 for i, line in enumerate(lines):
                     # Actualizar día si encontramos uno en la línea
                     for d in dias_semana:
-                        # Verificamos que la línea sea principalmente el día (ej: "Sábado", "Sábado 17")
-                        # y no una frase larga que contenga el día
-                        if d in line and len(line) < 30:
-                            dia_actual = d
-                            # A veces viene acompañado de fecha (ej: "Viernes (16/01/26)")
-                            # Podríamos extraerla también si quisiéramos
+                        # Verificamos que la línea sea principalmente el día
+                        if d in line and len(line) < 40:
+                            # Intentar extraer fecha exacta: (16/01/26) o 16/01/2026
+                            match_fecha = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', line)
+                            if match_fecha:
+                                dia_actual = f"{d} {match_fecha.group(1)}" # Ej: "Viernes 16/01/26"
+                            else:
+                                dia_actual = d
                             break
 
                     if "valsequillo" in line.lower():
@@ -819,6 +824,68 @@ class ScraperBaloncesto:
         except Exception as e:
             logger.error(f"Error al generar PDF: {e}")
             raise
+
+    def generar_calendario(self, partidos: List[Dict], tipo_jornada: str = "") -> Optional[Path]:
+        """
+        Genera un archivo de calendario (.ics) para importar en móviles/Outlook
+        """
+        try:
+            c = Calendar()
+            count = 0
+            
+            for p in partidos:
+                # Intentar construir fecha y hora de inicio
+                fecha_str = p.get('dia', '')
+                hora_str = p.get('hora', '00:00')
+                
+                # Extraer DD/MM/YY de "Viernes 16/01/26"
+                match = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', fecha_str)
+                if match:
+                    fecha_pura = match.group(1)
+                    # Normalizar año (si viene 26 convertir a 2026)
+                    partes = fecha_pura.split('/')
+                    if len(partes[2]) == 2:
+                        partes[2] = "20" + partes[2]
+                        fecha_pura = "/".join(partes)
+                    
+                    fecha_hora_str = f"{fecha_pura} {hora_str}"
+                    try:
+                        # Parsear fecha
+                        inicio = datetime.strptime(fecha_hora_str, "%d/%m/%Y %H:%M")
+                        
+                        # Crear Evento
+                        e = Event()
+                        e.name = f"🏀 {p['local']} vs {p['visitante']}"
+                        e.begin = inicio
+                        e.duration = timedelta(hours=1, minutes=45) # Duración estimada partido
+                        e.location = p['lugar']
+                        e.description = f"Categoría: {p['categoria']}\nJornada: {tipo_jornada}\nOrigen: {p.get('origen','')}"
+                        
+                        c.events.add(e)
+                        count += 1
+                    except ValueError:
+                        logger.warning(f"No se pudo parsear fecha para calendario: {fecha_hora_str}")
+                        continue
+                else:
+                    logger.debug(f"Partido sin fecha exacta, omitido de calendario: {p['local']} ({fecha_str})")
+            
+            if count > 0:
+                sufijo_tipo = f"_{tipo_jornada}" if tipo_jornada else ""
+                now = datetime.now()
+                nombre_archivo = f"PARTIDOS_VALSEQUILLO{sufijo_tipo}_{now.strftime('%d_%m')}.ics"
+                path_ics = Path(nombre_archivo)
+                
+                with open(path_ics, 'w', encoding='utf-8') as f:
+                    f.writelines(c.serialize_iter())
+                
+                logger.info(f"Calendario generado con {count} eventos: {path_ics}")
+                return path_ics
+            
+            return None
+
+        except Exception as e:
+            logger.error(f"Error generando calendario: {e}")
+            return None
     
     def ejecutar(self) -> List[Path]:
         """
@@ -873,6 +940,12 @@ class ScraperBaloncesto:
             pdf_def = self.generar_pdf(partidos_definitivos, "DEFINITIVA")
             pdfs_generados.append(pdf_def)
             logger.info(f" PDF Definitiva: {pdf_def}")
+            
+            # Generar Calendario Definitiva
+            ics_def = self.generar_calendario(partidos_definitivos, "DEFINITIVA")
+            if ics_def: 
+                pdfs_generados.append(ics_def)
+                logger.info(f" ICS Calendario: {ics_def}")
         
         # Generar PDF Provisional
         if partidos_provisionales:
@@ -880,6 +953,12 @@ class ScraperBaloncesto:
             pdf_prov = self.generar_pdf(partidos_provisionales, "PROVISIONAL")
             pdfs_generados.append(pdf_prov)
             logger.info(f" PDF Provisional: {pdf_prov}")
+            
+            # Generar Calendario Provisional
+            ics_prov = self.generar_calendario(partidos_provisionales, "PROVISIONAL")
+            if ics_prov: 
+                pdfs_generados.append(ics_prov)
+                logger.info(f" ICS Calendario: {ics_prov}")
             
         logger.info("=== Proceso completado exitosamente ===")
         
