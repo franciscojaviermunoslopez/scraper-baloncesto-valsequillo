@@ -200,8 +200,14 @@ class ScraperBaloncesto:
                     for d in dias_semana:
                         # Verificamos que la línea sea principalmente el día
                         if d in line and len(line) < 40:
-                            # Intentar extraer fecha exacta: (16/01/26) o 16/01/2026
+                            # 1. Buscar fecha en la misma línea
                             match_fecha = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', line)
+                            
+                            # 2. Si no está, buscar en la línea SIGUIENTE
+                            if not match_fecha and i + 1 < len(lines):
+                                line_next = lines[i+1]
+                                match_fecha = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', line_next)
+                            
                             if match_fecha:
                                 dia_actual = f"{d} {match_fecha.group(1)}" # Ej: "Viernes 16/01/26"
                             else:
