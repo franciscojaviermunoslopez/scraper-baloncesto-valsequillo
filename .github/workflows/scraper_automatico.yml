@@ -43,13 +43,17 @@ jobs:
       id: date
       run: echo "date=$(date +'%d/%m/%Y')" >> $GITHUB_OUTPUT
     
-    - name: Leer preview del email
+    - name: Leer contenido HTML del preview
       id: email_preview
       run: |
         if [ -f "email_preview.html" ]; then
-          echo "found=true" >> $GITHUB_OUTPUT
+          {
+            echo 'html_content<<EOF'
+            cat email_preview.html
+            echo EOF
+          } >> $GITHUB_OUTPUT
         else
-          echo "found=false" >> $GITHUB_OUTPUT
+          echo "html_content=<h2>🏀 Partidos de Valsequillo</h2><p>No se pudo generar el preview.</p>" >> $GITHUB_OUTPUT
         fi
     
     - name: Enviar email con PDF adjunto
@@ -64,8 +68,7 @@ jobs:
         subject: '🏀 Partidos Valsequillo - ${{ steps.date.outputs.date }}'
         to: ${{ secrets.EMAIL_TO }}
         from: CB Valsequillo Scraper
-        html_body: file://email_preview.html
-        convert_markdown: false
+        html_body: ${{ steps.email_preview.outputs.html_content }}
         attachments: PARTIDOS_VALSEQUILLO_*
     
     - name: Subir resultados como artefacto (backup)
