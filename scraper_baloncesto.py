@@ -926,9 +926,9 @@ class ScraperBaloncesto:
                         
                         # Añadir ALERTAS/RECORDATORIOS
                         # Recordatorio 1 día antes
-                        e.alarms.add(DisplayAlarm(trigger=timedelta(days=-1), display_text="🏀 Partido mañana!"))
+                        e.alarms.append(DisplayAlarm(trigger=timedelta(days=-1), display_text="🏀 Partido mañana!"))
                         # Recordatorio 2 horas antes
-                        e.alarms.add(DisplayAlarm(trigger=timedelta(hours=-2), display_text="🏀 Partido en 2 horas"))
+                        e.alarms.append(DisplayAlarm(trigger=timedelta(hours=-2), display_text="🏀 Partido en 2 horas"))
                         
                         c.events.add(e)
                         count += 1
