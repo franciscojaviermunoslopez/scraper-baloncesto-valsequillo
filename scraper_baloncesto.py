@@ -131,10 +131,11 @@ class ScraperBaloncesto:
             # Filtrar para quedarnos con la versión MÁS RECIENTE de cada jornada
             # Ejemplo: Si hay "Jornada 14 DEFINITIVA 2" y "Jornada 14 DEFINITIVA 3", solo cogemos la 3
             jornadas_unicas = {}
+            import re  # Mover aquí, fuera del bucle
+            
             for j in jornadas_recientes:
                 # Extraer número de jornada (ej: "Jornada 14 (05-11 Ene) DEFINITIVA 3" -> "14-DEFINITIVA")
                 # O si no tiene número: "Jornada DEFINITIVA" -> "0-DEFINITIVA"
-                import re
                 match = re.search(r'Jornada\s+(\d+)?\s*.*?(DEFINITIVA|PROVISIONAL)', j['titulo'], re.IGNORECASE)
                 if match:
                     num_jornada = match.group(1) if match.group(1) else "0"  # Si no hay número, usar "0"
