@@ -1324,8 +1324,9 @@ class ScraperBaloncesto:
                 pdfs_generados.append(ics_prov)
                 logger.info(f" ICS Calendario: {ics_prov}")
             
-        # 4.5. Sincronizar con Google Calendar (si está configurado)
-        self.sincronizar_google_calendar(todos_los_partidos)
+        # 4.5. Sincronizar con Google Calendar (solo partidos DEFINITIVOS)
+        if partidos_definitivos:
+            self.sincronizar_google_calendar(partidos_definitivos)
         
         # 5. Generar preview HTML para el email (incluyendo cambios si los hay)
         preview_email = self.generar_preview_email(partidos_definitivos, partidos_provisionales, cambios_detectados)
