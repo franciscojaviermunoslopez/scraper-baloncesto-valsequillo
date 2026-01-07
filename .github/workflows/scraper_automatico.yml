@@ -37,16 +37,31 @@ jobs:
         GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
         GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
     
-    - name: Verificar si hay cambios
+    - name: Verificar si hay cambios o es lunes
       id: should_send_email
       run: |
+        DAY_OF_WEEK=$(date +%u)  # 1=Lunes, 2=Martes, ..., 7=Domingo
+        
         # Verificar si se detectaron cambios en los logs
         if grep -q "⚠️.*Se detectaron.*cambios" scraper.log 2>/dev/null; then
+          HAS_CHANGES=true
+          echo "⚠️ CAMBIOS DETECTADOS"
+        else
+          HAS_CHANGES=false
+        fi
+        
+        # LÓGICA DE ENVÍO:
+        # - LUNES: Siempre enviar (resumen semanal)
+        # - OTROS DÍAS: Solo si hay cambios
+        if [ "$DAY_OF_WEEK" = "1" ]; then
           echo "send_email=true" >> $GITHUB_OUTPUT
-          echo "⚠️ CAMBIOS DETECTADOS - Se enviará email de alerta"
+          echo "📅 Es LUNES - Email semanal completo (SIEMPRE)"
+        elif [ "$HAS_CHANGES" = "true" ]; then
+          echo "send_email=true" >> $GITHUB_OUTPUT
+          echo "⚠️ Cambios detectados - Email de alerta"
         else
           echo "send_email=false" >> $GITHUB_OUTPUT
-          echo "✅ Sin cambios - No se enviará email (calendario actualizado silenciosamente)"
+          echo "✅ Sin cambios - Calendario actualizado silenciosamente"
         fi
     
     - name: Listar archivos generados
