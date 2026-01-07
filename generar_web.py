@@ -10,276 +10,340 @@ from datetime import datetime
 
 def generar_web_publica(partidos_definitivos=None):
     """
-    Genera index.html con los próximos partidos
-    
-    Args:
-        partidos_definitivos: Lista de partidos definitivos. Si es None, lee del snapshot.
+    Genera index.html con diseño PREMIUM y soporte para logo
     """
     
-    # Si no se pasaron partidos, leer del snapshot
+    # 1. Obtener datos
     if partidos_definitivos is None:
         snapshot_path = Path("partidos_anteriores.json")
         partidos = []
-        
         if snapshot_path.exists():
             try:
                 with open(snapshot_path, 'r', encoding='utf-8') as f:
-                    contenido = f.read().strip()
-                    if contenido:
-                        partidos = json.loads(contenido)
-                    else:
-                        print("⚠️ Archivo JSON vacío, generando web sin partidos")
-            except json.JSONDecodeError:
-                print("⚠️ Error leyendo JSON, generando web sin partidos")
-        else:
-            print("⚠️ No se encontró snapshot, generando web sin partidos")
-        
-        # Filtrar solo definitivos
+                    content = f.read().strip()
+                    if content:
+                        partidos = json.loads(content)
+            except:
+                pass
         partidos_def = [p for p in partidos if p.get('jornada_tipo') == 'DEFINITIVA']
     else:
-        # Usar los partidos que se pasaron como parámetro
         partidos_def = partidos_definitivos
     
-    # Generar HTML
+    # 2. Generar HTML con diseño mejorado
     html = """<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CB Valsequillo - Próximos Partidos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #2D8B3C;
+            --primary-dark: #1b5e25;
+            --accent: #FF9800;
+            --text-dark: #1a1a1a;
+            --text-light: #f5f5f5;
+            --bg-card: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #2D8B3C 0%, #1a5225 100%);
+            font-family: 'Outfit', sans-serif;
+            background-color: #f0f2f5;
             min-height: 100vh;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
+        /* HEADER PREMIUM */
         header {
-            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            margin-bottom: 40px;
             padding: 40px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
+            text-align: center;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 4px 20px rgba(45, 139, 60, 0.3);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Círculos decorativos fondo */
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            right: -30px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            padding: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
         }
         
         h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 800;
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
         .subtitle {
-            font-size: 1.2em;
+            font-weight: 300;
+            font-size: 1.1em;
             opacity: 0.9;
         }
+
+        /* GRID Partidos */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+            flex-grow: 1;
+        }
         
-        .partidos-grid {
+        .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
             margin-bottom: 40px;
         }
         
-        .partido-card {
-            background: white;
-            border-radius: 15px;
+        /* TARJETA PARTIDO */
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 5px solid transparent;
+            position: relative;
+            overflow: hidden;
         }
         
-        .partido-card:hover {
+        .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
         }
         
-        .partido-card.casa {
-            border-left: 5px solid #2D8B3C;
+        .card.casa { border-top-color: var(--primary); }
+        .card.fuera { border-top-color: var(--accent); }
+        
+        .card-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
         }
         
-        .partido-card.fuera {
-            border-left: 5px solid #FF9800;
-        }
+        .badge-casa { background: #e8f5e9; color: var(--primary); }
+        .badge-fuera { background: #fff3e0; color: var(--accent); }
         
-        .fecha {
+        .date-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1.1em;
-            color: #2D8B3C;
-            font-weight: bold;
+            gap: 8px;
+            color: #666;
+            font-size: 0.9em;
             margin-bottom: 15px;
+            font-weight: 600;
         }
         
-        .equipos {
+        .matchup {
+            text-align: center;
             margin: 20px 0;
         }
         
-        .equipo {
-            font-size: 1.2em;
-            padding: 10px;
-            margin: 5px 0;
-        }
-        
-        .equipo.local {
-            background: #e8f5e9;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-        
-        .equipo.visitante {
-            background: #f5f5f5;
-            border-radius: 8px;
+        .team {
+            font-size: 1.25em;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1.2;
         }
         
         .vs {
-            text-align: center;
-            color: #666;
-            font-weight: bold;
-            margin: 10px 0;
+            font-size: 0.8em;
+            color: #999;
+            margin: 8px 0;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
         
-        .info {
+        .team-highlight { color: var(--primary); }
+        
+        .meta-info {
             display: flex;
             justify-content: space-between;
-            margin-top: 15px;
+            align-items: center;
+            border-top: 1px solid #f0f0f0;
             padding-top: 15px;
-            border-top: 1px solid #e0e0e0;
-            font-size: 0.9em;
-            color: #666;
-        }
-        
-        .categoria {
-            background: #2D8B3C;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
+            margin-top: 10px;
             font-size: 0.85em;
         }
         
-        .lugar {
+        .category-tag {
+            background: #f5f5f5;
+            padding: 4px 10px;
+            border-radius: 8px;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .location-link {
+            color: #555;
+            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
+            transition: color 0.2s;
         }
         
-        .badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.75em;
-            font-weight: bold;
-        }
+        .location-link:hover { color: var(--primary); text-decoration: underline; }
         
-        .badge.casa {
-            background: #e8f5e9;
-            color: #2D8B3C;
-        }
-        
-        .badge.fuera {
-            background: #fff3e0;
-            color: #FF9800;
-        }
-        
+        /* FOOTER */
         footer {
             text-align: center;
-            color: white;
             padding: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .actualizado {
+            color: #888;
             font-size: 0.9em;
-            opacity: 0.8;
+            margin-top: auto;
         }
         
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
-            }
-            
-            .partidos-grid {
-                grid-template-columns: 1fr;
-            }
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            color: #666;
+        }
+
+        .upload-hint {
+            font-size: 0.8em; 
+            margin-top: 5px; 
+            color: rgba(255,255,255,0.7);
         }
     </style>
 </head>
 <body>
+
+    <header>
+        <div class="logo-container">
+            <!-- LOGO: Cambia 'logo.png' por tu archivo -->
+            <img src="logo_valsequillo_hq.png" alt="Logo Club" class="logo-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/33/33736.png'">
+        </div>
+        <h1>CB Valsequillo</h1>
+        <p class="subtitle">Próximos Partidos Oficiales</p>
+    </header>
+
     <div class="container">
-        <header>
-            <h1>🏀 CB Valsequillo</h1>
-            <p class="subtitle">Roque Grande - Próximos Partidos</p>
-        </header>
-        
-        <div class="partidos-grid">
+        <div class="grid">
 """
     
     if not partidos_def:
         html += """
-            <div style="grid-column: 1/-1; text-align: center; color: white; font-size: 1.5em; padding: 50px;">
-                <p>📅 No hay partidos definitivos programados en este momento</p>
-                <p style="font-size: 0.8em; margin-top: 20px; opacity: 0.8;">Esta página se actualiza automáticamente cada día</p>
-            </div>
+        <div class="empty-state">
+            <div style="font-size: 3em; margin-bottom: 20px;">🏀</div>
+            <h3>No hay partidos definitivos programados</h3>
+            <p>Vuelve a consultar el próximo lunes</p>
+        </div>
         """
     else:
         for p in partidos_def:
-            es_casa = "valsequillo" in p['local'].lower()
+            es_casa = "valsequillo" in p.get('local', '').lower()
             clase_card = "casa" if es_casa else "fuera"
-            badge_text = "🏠 En Casa" if es_casa else "✈️ Fuera"
-            badge_class = "casa" if es_casa else "fuera"
+            badge_class = "badge-casa" if es_casa else "badge-fuera"
+            badge_text = "🏠 EN CASA" if es_casa else "✈️ VISITANTE"
+            
+            # Limpiar nombres largos de equipos
+            local = p['local'].replace("(35008832)", "").replace("(35008831)", "").strip()
+            visitante = p['visitante'].replace("(35008832)", "").replace("(35008840)", "").strip()
+            
+            # Enlace a Google Maps para el lugar
+            lugar_query = p['lugar'].replace(" ", "+")
+            maps_url = f"https://www.google.com/maps/search/?api=1&query={lugar_query}"
             
             html += f"""
-            <div class="partido-card {clase_card}">
-                <div class="fecha">
-                    <span>📅</span>
-                    <span>{p['dia']}</span>
-                    <span style="margin-left: auto;">🕐 {p['hora']}</span>
+            <div class="card {clase_card}">
+                <div class="card-badge {badge_class}">{badge_text}</div>
+                
+                <div class="date-row">
+                    <span style="font-size: 1.2em;">📅</span>
+                    <div>
+                        <div style="color: var(--text-dark);">{p['dia']}</div>
+                        <div style="color: var(--primary);">{p['hora']}</div>
+                    </div>
                 </div>
                 
-                <span class="badge {badge_class}">{badge_text}</span>
-                
-                <div class="equipos">
-                    <div class="equipo local">{p['local']}</div>
+                <div class="matchup">
+                    <div class="team {'team-highlight' if es_casa else ''}">{local}</div>
                     <div class="vs">VS</div>
-                    <div class="equipo visitante">{p['visitante']}</div>
+                    <div class="team {'team-highlight' if not es_casa else ''}">{visitante}</div>
                 </div>
                 
-                <div class="info">
-                    <span class="categoria">{p['categoria']}</span>
-                    <span class="lugar">📍 {p['lugar']}</span>
+                <div class="meta-info">
+                    <span class="category-tag">{p['categoria']}</span>
+                    <a href="{maps_url}" target="_blank" class="location-link">
+                        📍 {p['lugar']}
+                    </a>
                 </div>
             </div>
             """
-    
+
     now = datetime.now().strftime("%d/%m/%Y %H:%M")
     html += f"""
         </div>
-        
-        <footer>
-            <p><strong>Club de Baloncesto Valsequillo</strong></p>
-            <p class="actualizado">Última actualización: {now}</p>
-            <p style="margin-top: 15px; font-size: 0.85em;">
-                📅 <a href="https://calendar.google.com" style="color: white;">Añadir al calendario</a> | 
-                📧 Actualizaciones automáticas cada día
-            </p>
-        </footer>
     </div>
+
+    <footer>
+        <p>Actualizado automáticamente: {now}</p>
+        <p style="font-size: 0.8em; margin-top: 10px;">
+            <a href="https://calendar.google.com" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">
+                � Suscribirse al Calendario
+            </a>
+        </p>
+    </footer>
+
 </body>
 </html>
 """
@@ -288,6 +352,14 @@ def generar_web_publica(partidos_definitivos=None):
     output_path = Path("docs/index.html")
     output_path.parent.mkdir(exist_ok=True)
     output_path.write_text(html, encoding='utf-8')
+    
+    # Copiar logo a docs/ si existe en la raíz
+    logo_filename = "logo_valsequillo_hq.png"
+    logo_source = Path(logo_filename)
+    if logo_source.exists():
+        import shutil
+        shutil.copy(logo_source, output_path.parent / logo_filename)
+        print(f"✅ Logo copiado a docs/: {logo_filename}")
     
     print(f"✅ Web pública generada: {output_path}")
     print(f"   Total partidos mostrados: {len(partidos_def)}")
