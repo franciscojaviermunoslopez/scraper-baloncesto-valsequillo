@@ -2,9 +2,10 @@ name: Scraper Automático de Partidos
 
 on:
   # Ejecutar TODOS los días a las 8:00 AM (UTC = 9:00 AM Canarias)
-  # Email: Solo si se detectan cambios
+  # Email: Solo si se detectan cambion:
   schedule:
-    - cron: '0 8 * * *'  # Todos los días a las 8 AM UTC
+    # ⚠️ PRUEBA: Ejecutar HOY a las 16:00 UTC (después volver a '0 8 * * *')
+    - cron: '0 16 * * *'
   
   # También permitir ejecución manual
   workflow_dispatch:
