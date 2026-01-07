@@ -1127,12 +1127,17 @@ class ScraperBaloncesto:
             # Leer snapshot anterior
             partidos_anteriores = []
             if snapshot_path.exists():
-                import json
-                with open(snapshot_path, 'r', encoding='utf-8') as f:
-                    partidos_anteriores = json.load(f)
+                try:
+                    with open(snapshot_path, 'r', encoding='utf-8') as f:
+                        contenido = f.read().strip()
+                        if contenido:  # Solo parsear si no está vacío
+                            import json
+                            partidos_anteriores = json.loads(contenido)
+                except json.JSONDecodeError:
+                    logger.warning("Archivo snapshot corrupto, iniciando desde cero")
+                    partidos_anteriores = []
             
             # Crear diccionario de partidos anteriores por clave única
-            # Clave: "LOCAL vs VISITANTE - CATEGORIA"
             partidos_ant_dict = {}
             for p in partidos_anteriores:
                 clave = f"{p['local']} vs {p['visitante']} - {p['categoria']}"
@@ -1165,17 +1170,21 @@ class ScraperBaloncesto:
                             'cambios': cambios_partido
                         })
             
-            # Guardar snapshot actual para la próxima vez
+            logger.info(f"Cambios detectados: {len(cambios)}")
+            
+        except Exception as e:
+            logger.error(f"Error comparando cambios: {e}")
+        
+        # SIEMPRE guardar snapshot actual (incluso si hubo errores antes)
+        try:
             import json
             with open(snapshot_path, 'w', encoding='utf-8') as f:
                 json.dump(partidos_actuales, f, ensure_ascii=False, indent=2)
-            
-            logger.info(f"Cambios detectados: {len(cambios)}")
-            return cambios
-            
+            logger.debug(f"Snapshot guardado: {len(partidos_actuales)} partidos")
         except Exception as e:
-            logger.error(f"Error detectando cambios: {e}")
-            return []
+            logger.error(f"Error guardando snapshot: {e}")
+        
+        return cambios
     
     def sincronizar_google_calendar(self, partidos: List[Dict]) -> bool:
         """
