@@ -13,12 +13,20 @@ def generar_web_publica():
     
     # Leer partidos del snapshot
     snapshot_path = Path("partidos_anteriores.json")
-    if not snapshot_path.exists():
-        print("No se encontró snapshot de partidos")
-        return
+    partidos = []
     
-    with open(snapshot_path, 'r', encoding='utf-8') as f:
-        partidos = json.load(f)
+    if snapshot_path.exists():
+        try:
+            with open(snapshot_path, 'r', encoding='utf-8') as f:
+                contenido = f.read().strip()
+                if contenido:  # Verificar que no esté vacío
+                    partidos = json.loads(contenido)
+                else:
+                    print("⚠️ Archivo JSON vacío, generando web sin partidos")
+        except json.JSONDecodeError:
+            print("⚠️ Error leyendo JSON, generando web sin partidos")
+    else:
+        print("⚠️ No se encontró snapshot, generando web sin partidos")
     
     # Filtrar solo definitivos
     partidos_def = [p for p in partidos if p.get('jornada_tipo') == 'DEFINITIVA']
