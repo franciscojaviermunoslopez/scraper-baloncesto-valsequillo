@@ -149,8 +149,8 @@ jobs:
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add partidos_anteriores.json || true
-        git diff --quiet && git diff --staged --quiet || (git commit -m "📊 Actualizar snapshot - $(date +'%Y-%m-%d')" && git push)
+        git add partidos_anteriores.json
+        git diff --quiet && git diff --staged --quiet || (git commit -m "📊 Actualizar snapshot - $(date +'%Y-%m-%d')" && git push) || true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
@@ -159,8 +159,8 @@ jobs:
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git pull --rebase
+        git pull --rebase || true
         git add -A docs/
-        git diff --quiet && git diff --staged --quiet || (git commit -m "🌐 Actualizar web pública - $(date +'%Y-%m-%d')" && git push)
+        git diff --quiet && git diff --staged --quiet || (git commit -m "🌐 Actualizar web pública - $(date +'%Y-%m-%d')" && git push) || true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
