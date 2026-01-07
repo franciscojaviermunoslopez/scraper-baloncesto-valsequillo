@@ -1,9 +1,10 @@
 name: Scraper Automático de Partidos
 
 on:
-  # Ejecutar todos los lunes a las 8:00 AM (hora UTC = 9:00 AM Canarias)
+  # Ejecutar TODOS los días a las 8:00 AM (UTC = 9:00 AM Canarias)
+  # Email: Solo si se detectan cambios
   schedule:
-    - cron: '0 8 * * 1'
+    - cron: '0 8 * * *'  # Todos los días a las 8 AM UTC
   
   # También permitir ejecución manual
   workflow_dispatch:
@@ -36,6 +37,18 @@ jobs:
         GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
         GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
     
+    - name: Verificar si hay cambios
+      id: should_send_email
+      run: |
+        # Verificar si se detectaron cambios en los logs
+        if grep -q "⚠️.*Se detectaron.*cambios" scraper.log 2>/dev/null; then
+          echo "send_email=true" >> $GITHUB_OUTPUT
+          echo "⚠️ CAMBIOS DETECTADOS - Se enviará email de alerta"
+        else
+          echo "send_email=false" >> $GITHUB_OUTPUT
+          echo "✅ Sin cambios - No se enviará email (calendario actualizado silenciosamente)"
+        fi
+    
     - name: Listar archivos generados
       id: list_files
       run: |
@@ -55,7 +68,7 @@ jobs:
         ls -lh *.ics || echo "No se encontraron archivos .ics"
     
     - name: Enviar email con PDF adjunto
-      if: success()
+      if: success() && steps.should_send_email.outputs.send_email == 'true'
       uses: dawidd6/action-send-mail@v3
       with:
         server_address: smtp.gmail.com
