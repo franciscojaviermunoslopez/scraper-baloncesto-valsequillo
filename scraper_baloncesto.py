@@ -185,7 +185,8 @@ class ScraperBaloncesto:
             doc = fitz.open(pdf_path)
             
             # Patrón para detectar códigos de equipo: (35xxxxxx) o similar
-            patron_codigo = re.compile(r'\(\d+\)$')
+            # Quitamos el $ para permitir basura al final de la línea
+            patron_codigo = re.compile(r'\(\d+\)')
             
             for num_pagina, page in enumerate(doc):
                 text = page.get_text()
@@ -201,18 +202,23 @@ class ScraperBaloncesto:
                     for d in dias_semana:
                         # Verificamos que la línea sea principalmente el día
                         if d in line and len(line) < 40:
-                            # 1. Buscar fecha en la misma línea
                             match_fecha = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', line)
                             
-                            # 2. Si no está, buscar en la línea SIGUIENTE
-                            if not match_fecha and i + 1 < len(lines):
-                                line_next = lines[i+1]
-                                match_fecha = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', line_next)
+                            # 2. Si no está, buscar en las lineas SIGUIENTES (hasta 3)
+                            if not match_fecha:
+                                for offset in range(1, 4):
+                                    if i + offset < len(lines):
+                                        line_next = lines[i+offset]
+                                        match_fecha = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', line_next)
+                                        if match_fecha:
+                                            break
                             
                             if match_fecha:
                                 dia_actual = f"{d} {match_fecha.group(1)}" # Ej: "Viernes 16/01/26"
+                                logger.debug(f"Fecha detectada para {d}: {match_fecha.group(1)}")
                             else:
                                 dia_actual = d
+                                logger.warning(f"Fecha NO detectada para día {d} (Usando solo nombre día)")
                             break
 
                     if "valsequillo" in line.lower():
@@ -873,11 +879,16 @@ class ScraperBaloncesto:
                         
                         c.events.add(e)
                         count += 1
-                    except ValueError:
-                        logger.warning(f"No se pudo parsear fecha para calendario: {fecha_hora_str}")
+                        logger.debug(f"Evento añadido al calendario: {e.name} ({fecha_hora_str})")
+                        
+                    except ValueError as ve:
+                        logger.warning(f"Error de valor al crear evento calendario: {ve}")
+                        continue
+                    except Exception as ex:
+                        logger.error(f"Error inesperado al crear evento: {ex}")
                         continue
                 else:
-                    logger.debug(f"Partido sin fecha exacta, omitido de calendario: {p['local']} ({fecha_str})")
+                    logger.warning(f"CALENDARIO: Partido sin fecha exacta (solo '{fecha_str}'), se omite: {p['local']}")
             
             if count > 0:
                 sufijo_tipo = f"_{tipo_jornada}" if tipo_jornada else ""
