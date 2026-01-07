@@ -47,13 +47,10 @@ jobs:
       id: email_preview
       run: |
         if [ -f "email_preview.html" ]; then
-          {
-            echo 'html_content<<EOF'
-            cat email_preview.html
-            echo EOF
-          } >> $GITHUB_OUTPUT
+          HTML_CONTENT=$(cat email_preview.html | tr '\n' ' ' | sed 's/"/\\"/g')
+          echo "html_content=$HTML_CONTENT" >> $GITHUB_OUTPUT
         else
-          echo "html_content=<h2>🏀 Partidos de Valsequillo</h2><p>No se pudo generar el preview.</p>" >> $GITHUB_OUTPUT
+          echo "html_content=<h2>No preview</h2>" >> $GITHUB_OUTPUT
         fi
     
     - name: Enviar email con PDF adjunto
