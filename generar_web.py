@@ -330,6 +330,16 @@ def generar_web_publica(partidos_definitivos=None):
             </div>
             """
 
+    # Obtener Calendar ID de variables de entorno o config
+    import os
+    calendar_id = os.getenv('GOOGLE_CALENDAR_ID', '')
+    
+    # Generar enlace de suscripción al calendario
+    if calendar_id:
+        calendar_url = f"https://calendar.google.com/calendar/u/0?cid={calendar_id}"
+    else:
+        calendar_url = "https://calendar.google.com"
+    
     now = datetime.now().strftime("%d/%m/%Y %H:%M")
     html += f"""
         </div>
@@ -338,8 +348,8 @@ def generar_web_publica(partidos_definitivos=None):
     <footer>
         <p>Actualizado automáticamente: {now}</p>
         <p style="font-size: 0.8em; margin-top: 10px;">
-            <a href="https://calendar.google.com" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">
-                � Suscribirse al Calendario
+            <a href="{calendar_url}" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">
+                📅 Suscribirse al Calendario Oficial
             </a>
         </p>
     </footer>
