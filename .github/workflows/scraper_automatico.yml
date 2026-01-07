@@ -43,15 +43,13 @@ jobs:
       id: date
       run: echo "date=$(date +'%d/%m/%Y')" >> $GITHUB_OUTPUT
     
-    - name: Leer contenido HTML del preview
-      id: email_preview
+    - name: Listar todos los archivos generados
       run: |
-        if [ -f "email_preview.html" ]; then
-          HTML_CONTENT=$(cat email_preview.html | tr '\n' ' ' | sed 's/"/\\"/g')
-          echo "html_content=$HTML_CONTENT" >> $GITHUB_OUTPUT
-        else
-          echo "html_content=<h2>No preview</h2>" >> $GITHUB_OUTPUT
-        fi
+        echo "📁 Archivos en el directorio:"
+        ls -lh PARTIDOS_VALSEQUILLO_* || echo "No se encontraron archivos"
+        echo ""
+        echo "📄 Archivos .ics específicamente:"
+        ls -lh *.ics || echo "No se encontraron archivos .ics"
     
     - name: Enviar email con PDF adjunto
       if: success()
@@ -65,8 +63,41 @@ jobs:
         subject: '🏀 Partidos Valsequillo - ${{ steps.date.outputs.date }}'
         to: ${{ secrets.EMAIL_TO }}
         from: CB Valsequillo Scraper
-        html_body: ${{ steps.email_preview.outputs.html_content }}
-        attachments: PARTIDOS_VALSEQUILLO_*
+        html_body: |
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #2D8B3C; border-bottom: 3px solid #2D8B3C; padding-bottom: 10px;">
+              🏀 Partidos del CB Valsequillo
+            </h2>
+            <p>Hola,</p>
+            <p>Te adjuntamos los <strong>PDFs</strong> con los próximos partidos y el <strong>calendario (.ics)</strong> para añadirlos a tu móvil automáticamente.</p>
+            
+            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 0;"><strong>📎 Archivos adjuntos:</strong></p>
+              <ul style="margin: 10px 0;">
+                <li>📄 PDF Jornada Definitiva (si hay partidos)</li>
+                <li>📄 PDF Jornada Provisional (si hay partidos)</li>
+                <li>📅 Calendario .ics con <strong>recordatorios automáticos</strong></li>
+              </ul>
+            </div>
+            
+            <div style="background-color: #e8f5e9; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 0; color: #2D8B3C;"><strong>⏰ Recordatorios incluidos en el calendario:</strong></p>
+              <ul style="margin: 10px 0;">
+                <li>📢 1 día antes del partido</li>
+                <li>🔔 2 horas antes del partido</li>
+              </ul>
+              <p style="margin: 5px 0; font-size: 14px;">Descarga el archivo .ics y ábrelo en tu móvil para añadir todos los partidos automáticamente.</p>
+            </div>
+            
+            <p style="color: #666; font-size: 12px; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 10px;">
+              <strong>Club de Baloncesto Valsequillo - Roque Grande</strong><br>
+              Este email se envía automáticamente cada lunes.<br>
+              Generado: ${{ github.event.repository.updated_at }}
+            </p>
+          </div>
+        attachments: |
+          PARTIDOS_VALSEQUILLO_*.pdf
+          PARTIDOS_VALSEQUILLO_*.ics
     
     - name: Subir resultados como artefacto (backup)
       uses: actions/upload-artifact@v4
