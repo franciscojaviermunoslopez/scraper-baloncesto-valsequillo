@@ -65,13 +65,35 @@ class ScraperBaloncesto:
     def descargar_pdfs_recientes(self) -> List[Dict]:
         """
         Descarga las jornadas más recientes (definitivas y provisionales)
+        CON REINTENTOS automáticos si la web está caída.
         
         Returns:
             Lista de diccionarios con info de PDFs descargados
         """
+        max_intentos = 3
+        tiempo_espera = 5  # segundos
+        
+        for intento in range(1, max_intentos + 1):
+            try:
+                logger.info(f"Accediendo a {self.url_jornadas} (Intento {intento}/{max_intentos})")
+                response = self.session.get(self.url_jornadas, timeout=60, verify=False)  # Aumentado a 60s
+                response.raise_for_status()
+                
+                # Si llegamos aquí, la conexión fue exitosa
+                break
+                
+            except Exception as e:
+                logger.warning(f"Intento {intento} falló: {e}")
+                
+                if intento < max_intentos:
+                    logger.info(f"Reintentando en {tiempo_espera} segundos...")
+                    time.sleep(tiempo_espera)
+                    tiempo_espera *= 2  # Backoff exponencial (5s, 10s, 20s)
+                else:
+                    logger.error("Error al descargar los PDFs después de todos los reintentos")
+                    return []
+        
         try:
-            logger.info(f"Accediendo a {self.url_jornadas}")
-            response = self.session.get(self.url_jornadas, timeout=30, verify=False)
             response.raise_for_status()
             
             soup = BeautifulSoup(response.content, 'html.parser')
