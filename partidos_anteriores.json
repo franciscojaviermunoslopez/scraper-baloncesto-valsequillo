@@ -1,5 +1,35 @@
 [
   {
+    "dia": "Miércoles 14/01/26",
+    "hora": "20:30",
+    "categoria": "81270  Sen Masc 2ª F G-B",
+    "local": "Vito Valsequillo (35008831)",
+    "visitante": "Asigna Esbisoni Naranja (35023912)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Sábado 17/01/26",
+    "hora": "17:00",
+    "categoria": "77867  Cad Masc S-B",
+    "local": "Ecoener CB Castillo & (35003808)",
+    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "lugar": "Cdad Dep Vicente del Bosque",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Sábado 17/01/26",
+    "hora": "18:00",
+    "categoria": "78276  Junior Masc S-B",
+    "local": "Aqualia Ingenio (35002661)",
+    "visitante": "Valsequillo (35008832)",
+    "lugar": "Pab Pedro Padilla",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Viernes 09/01/26",
     "hora": "18:30",
     "categoria": "78270  Junior Masc S-B",
@@ -28,35 +58,5 @@
     "lugar": "Pab Pedro Padilla",
     "origen": "Página 1",
     "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Miércoles 14/01/26",
-    "hora": "20:30",
-    "categoria": "81270  Sen Masc 2ª F G-B",
-    "local": "Vito Valsequillo (35008831)",
-    "visitante": "Asigna Esbisoni Naranja (35023912)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Sábado 17/01/26",
-    "hora": "00:00",
-    "categoria": "Cad Masc S-B",
-    "local": "Ecoener CB Castillo & (35003808)",
-    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
-    "lugar": "Cdad Dep Vicente del Bosque",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Sábado 17/01/26",
-    "hora": "18:00",
-    "categoria": "78276  Junior Masc S-B",
-    "local": "Aqualia Ingenio (35002661)",
-    "visitante": "Valsequillo (35008832)",
-    "lugar": "Pab Pedro Padilla",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
   }
 ]
