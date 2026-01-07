@@ -17,11 +17,11 @@ ENV/
 *.xlsx
 *.pdf
 *.ics
-*.html
 jornada_*.pdf
 partidos_*.xlsx
 PARTIDOS_*.pdf
 # partidos_anteriores.json - IMPORTANTE: Este NO se ignora para detectar cambios
+# docs/ - IMPORTANTE: Esta carpeta NO se ignora (se usa para GitHub Pages)
 
 # Logs
 *.log
