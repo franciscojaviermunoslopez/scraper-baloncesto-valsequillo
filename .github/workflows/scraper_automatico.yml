@@ -32,6 +32,9 @@ jobs:
     - name: Ejecutar scraper
       run: |
         python scraper_baloncesto.py
+      env:
+        GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
+        GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
     
     - name: Listar archivos generados
       id: list_files

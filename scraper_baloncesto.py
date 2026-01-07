@@ -961,7 +961,7 @@ class ScraperBaloncesto:
             logger.error(f"Error generando calendario: {e}")
             return None
     
-    def generar_preview_email(self, partidos_definitivos: List[Dict], partidos_provisionales: List[Dict]) -> Optional[Path]:
+    def generar_preview_email(self, partidos_definitivos: List[Dict], partidos_provisionales: List[Dict], cambios: List[Dict] = None) -> Optional[Path]:
         """
         Genera un preview HTML de los partidos para incluir en el email
         """
@@ -972,6 +972,25 @@ class ScraperBaloncesto:
                     🏀 Próximos Partidos de Valsequillo
                 </h2>
             """
+            
+            # Mostrar cambios si hay
+            if cambios:
+                html += f"""
+                <div style="background-color: #fff3cd; border-left: 4px solid #ff9800; padding: 15px; margin: 20px 0;">
+                    <h3 style="color: #ff6f00; margin-top: 0;">⚠️ CAMBIOS DETECTADOS ({len(cambios)})</h3>
+                    <p style="margin: 5px 0;">La federación ha modificado estos partidos desde la última vez:</p>
+                    <ul style="margin: 10px 0;">
+                """
+                for cambio in cambios:
+                    html += f"<li><strong>{cambio['local']} vs {cambio['visitante']}</strong><br>"
+                    for c in cambio['cambios']:
+                        html += f"&nbsp;&nbsp;• {c}<br>"
+                    html += "</li>"
+                html += """
+                    </ul>
+                    <p style="color: #666; font-size: 12px; margin-top: 10px;">Actualiza tu calendario con el nuevo archivo .ics adjunto.</p>
+                </div>
+                """
             
             # Función auxiliar para generar tabla
             def generar_tabla(partidos, titulo, color):
@@ -1047,6 +1066,184 @@ class ScraperBaloncesto:
             logger.error(f"Error generando preview de email: {e}")
             return None
     
+    def detectar_cambios(self, partidos_actuales: List[Dict]) -> List[Dict]:
+        """
+        Compara los partidos actuales con los de la semana anterior.
+        Detecta cambios en fecha, hora o lugar.
+        
+        Returns:
+            Lista de cambios detectados
+        """
+        cambios = []
+        snapshot_path = Path("partidos_anteriores.json")
+        
+        try:
+            # Leer snapshot anterior
+            partidos_anteriores = []
+            if snapshot_path.exists():
+                import json
+                with open(snapshot_path, 'r', encoding='utf-8') as f:
+                    partidos_anteriores = json.load(f)
+            
+            # Crear diccionario de partidos anteriores por clave única
+            # Clave: "LOCAL vs VISITANTE - CATEGORIA"
+            partidos_ant_dict = {}
+            for p in partidos_anteriores:
+                clave = f"{p['local']} vs {p['visitante']} - {p['categoria']}"
+                partidos_ant_dict[clave] = p
+            
+            # Comparar con actuales
+            for p_actual in partidos_actuales:
+                clave = f"{p_actual['local']} vs {p_actual['visitante']} - {p_actual['categoria']}"
+                
+                if clave in partidos_ant_dict:
+                    p_anterior = partidos_ant_dict[clave]
+                    
+                    # Verificar cambios
+                    cambios_partido = []
+                    
+                    if p_actual['dia'] != p_anterior['dia']:
+                        cambios_partido.append(f"Día: {p_anterior['dia']} → {p_actual['dia']}")
+                    
+                    if p_actual['hora'] != p_anterior['hora']:
+                        cambios_partido.append(f"Hora: {p_anterior['hora']} → {p_actual['hora']}")
+                    
+                    if p_actual['lugar'] != p_anterior['lugar']:
+                        cambios_partido.append(f"Lugar: {p_anterior['lugar']} → {p_actual['lugar']}")
+                    
+                    if cambios_partido:
+                        cambios.append({
+                            'partido': clave,
+                            'local': p_actual['local'],
+                            'visitante': p_actual['visitante'],
+                            'cambios': cambios_partido
+                        })
+            
+            # Guardar snapshot actual para la próxima vez
+            import json
+            with open(snapshot_path, 'w', encoding='utf-8') as f:
+                json.dump(partidos_actuales, f, ensure_ascii=False, indent=2)
+            
+            logger.info(f"Cambios detectados: {len(cambios)}")
+            return cambios
+            
+        except Exception as e:
+            logger.error(f"Error detectando cambios: {e}")
+            return []
+    
+    def sincronizar_google_calendar(self, partidos: List[Dict]) -> bool:
+        """
+        Sincroniza los partidos con Google Calendar compartido.
+        Requiere variables de entorno:
+        - GOOGLE_CALENDAR_ID
+        - GOOGLE_CREDENTIALS_JSON
+        
+        Returns:
+            True si tuvo éxito, False si falló
+        """
+        try:
+            import os
+            import json
+            from google.oauth2 import service_account
+            from googleapiclient.discovery import build
+            
+            # Leer variables de entorno
+            calendar_id = os.getenv('GOOGLE_CALENDAR_ID')
+            creds_json = os.getenv('GOOGLE_CREDENTIALS_JSON')
+            
+            if not calendar_id or not creds_json:
+                logger.info("Google Calendar no configurado (variables de entorno faltantes). Saltando sincronización.")
+                return False
+            
+            # Autenticar
+            credentials_dict = json.loads(creds_json)
+            credentials = service_account.Credentials.from_service_account_info(
+                credentials_dict,
+                scopes=['https://www.googleapis.com/auth/calendar']
+            )
+            
+            service = build('calendar', 'v3', credentials=credentials)
+            
+            # 1. Limpiar eventos antiguos (partidos ya jugados)
+            now = datetime.now(ZoneInfo("Atlantic/Canary")).isoformat()
+            
+            # Listar eventos futuros con nuestro marcador
+            events_result = service.events().list(
+                calendarId=calendar_id,
+                timeMin=now,
+                maxResults=100,
+                singleEvents=True,
+                orderBy='startTime',
+                q='CB Valsequillo'  # Buscar solo nuestros eventos
+            ).execute()
+            
+            existing_events = events_result.get('items', [])
+            
+            # Borrar todos los eventos existentes (para reemplazarlos con los actualizados)
+            for event in existing_events:
+                try:
+                    service.events().delete(calendarId=calendar_id, eventId=event['id']).execute()
+                    logger.debug(f"Evento eliminado: {event.get('summary', 'Sin título')}")
+                except Exception as e:
+                    logger.warning(f"No se pudo eliminar evento: {e}")
+            
+            # 2. Añadir nuevos eventos
+            count = 0
+            for p in partidos:
+                # Parsear fecha y hora
+                fecha_str = p.get('dia', '')
+                hora_str = p.get('hora', '00:00')
+                
+                match = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', fecha_str)
+                if match:
+                    fecha_pura = match.group(1)
+                    partes = fecha_pura.split('/')
+                    if len(partes[2]) == 2:
+                        partes[2] = "20" + partes[2]
+                        fecha_pura = "/".join(partes)
+                    
+                    fecha_hora_str = f"{fecha_pura} {hora_str}"
+                    try:
+                        inicio_naive = datetime.strptime(fecha_hora_str, "%d/%m/%Y %H:%M")
+                        inicio = inicio_naive.replace(tzinfo=ZoneInfo("Atlantic/Canary"))
+                        
+                        # Crear evento
+                        event = {
+                            'summary': f"🏀 {p['local']} vs {p['visitante']}",
+                            'location': p['lugar'],
+                            'description': f"Categoría: {p['categoria']}\nCompetición: CB Valsequillo\n\nCalendario actualizado automáticamente cada lunes.",
+                            'start': {
+                                'dateTime': inicio.isoformat(),
+                                'timeZone': 'Atlantic/Canary',
+                            },
+                            'end': {
+                                'dateTime': (inicio + timedelta(hours=1, minutes=45)).isoformat(),
+                                'timeZone': 'Atlantic/Canary',
+                            },
+                            'reminders': {
+                                'useDefault': False,
+                                'overrides': [
+                                    {'method': 'popup', 'minutes': 24 * 60},  # 1 día antes
+                                    {'method': 'popup', 'minutes': 120},       # 2 horas antes
+                                ],
+                            },
+                        }
+                        
+                        service.events().insert(calendarId=calendar_id, body=event).execute()
+                        count += 1
+                        logger.debug(f"Evento añadido a Google Calendar: {event['summary']}")
+                        
+                    except ValueError as ve:
+                        logger.warning(f"Error parseando fecha para Google Calendar: {ve}")
+                        continue
+            
+            logger.info(f"✅ Google Calendar sincronizado: {count} eventos añadidos")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error sincronizando con Google Calendar: {e}")
+            return False
+    
     def ejecutar(self) -> List[Path]:
         """
         Ejecuta el proceso completo: descarga múltiples jornadas, extracción y generación de PDFs independientes
@@ -1087,6 +1284,13 @@ class ScraperBaloncesto:
         excel_path = self.generar_excel(todos_los_partidos)
         logger.info(f"Archivo Excel global: {excel_path}")
         
+        # 3.5. Detectar cambios respecto a la semana anterior
+        cambios_detectados = self.detectar_cambios(todos_los_partidos)
+        if cambios_detectados:
+            logger.warning(f"⚠️ Se detectaron {len(cambios_detectados)} cambios en partidos!")
+            for cambio in cambios_detectados:
+                logger.warning(f"  - {cambio['partido']}: {', '.join(cambio['cambios'])}")
+        
         # 4. Separar y generar PDFs independientes
         pdfs_generados = []
         
@@ -1120,8 +1324,11 @@ class ScraperBaloncesto:
                 pdfs_generados.append(ics_prov)
                 logger.info(f" ICS Calendario: {ics_prov}")
             
-        # 5. Generar preview HTML para el email
-        preview_email = self.generar_preview_email(partidos_definitivos, partidos_provisionales)
+        # 4.5. Sincronizar con Google Calendar (si está configurado)
+        self.sincronizar_google_calendar(todos_los_partidos)
+        
+        # 5. Generar preview HTML para el email (incluyendo cambios si los hay)
+        preview_email = self.generar_preview_email(partidos_definitivos, partidos_provisionales, cambios_detectados)
         if preview_email:
             pdfs_generados.append(preview_email)
             
