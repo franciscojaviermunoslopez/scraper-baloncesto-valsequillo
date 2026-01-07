@@ -14,6 +14,7 @@ import ssl
 import csv
 import logging # Restaurado
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo # Para zona horaria Canarias
 from pathlib import Path
 from typing import List, Dict, Optional
 import urllib3
@@ -858,7 +859,9 @@ class ScraperBaloncesto:
                     fecha_hora_str = f"{fecha_pura} {hora_str}"
                     try:
                         # Parsear fecha
-                        inicio = datetime.strptime(fecha_hora_str, "%d/%m/%Y %H:%M")
+                        # Convertir a datetime con zona horaria de Canarias
+                        inicio_naive = datetime.strptime(fecha_hora_str, "%d/%m/%Y %H:%M")
+                        inicio = inicio_naive.replace(tzinfo=ZoneInfo("Atlantic/Canary"))
                         
                         # Crear Evento
                         e = Event()
