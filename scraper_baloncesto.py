@@ -18,7 +18,8 @@ from zoneinfo import ZoneInfo # Para zona horaria Canarias
 from pathlib import Path
 from typing import List, Dict, Optional
 import urllib3
-from ics import Calendar, Event # Para generar calendariome
+from ics import Calendar, Event
+from ics.alarm import DisplayAlarm  # Para recordatorios
 import time
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, landscape
@@ -923,6 +924,12 @@ class ScraperBaloncesto:
                         # Añadir UID único (importante para iOS)
                         e.uid = f"{inicio.strftime('%Y%m%d%H%M')}-{p['local'][:10].replace(' ', '')}-valsequillo@scraper.local"
                         
+                        # Añadir ALERTAS/RECORDATORIOS
+                        # Recordatorio 1 día antes
+                        e.alarms.add(DisplayAlarm(trigger=timedelta(days=-1), display_text="🏀 Partido mañana!"))
+                        # Recordatorio 2 horas antes
+                        e.alarms.add(DisplayAlarm(trigger=timedelta(hours=-2), display_text="🏀 Partido en 2 horas"))
+                        
                         c.events.add(e)
                         count += 1
                         logger.debug(f"Evento añadido al calendario: {e.name} ({fecha_hora_str})")
@@ -952,6 +959,92 @@ class ScraperBaloncesto:
 
         except Exception as e:
             logger.error(f"Error generando calendario: {e}")
+            return None
+    
+    def generar_preview_email(self, partidos_definitivos: List[Dict], partidos_provisionales: List[Dict]) -> Optional[Path]:
+        """
+        Genera un preview HTML de los partidos para incluir en el email
+        """
+        try:
+            html = """
+            <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+                <h2 style="color: #2D8B3C; border-bottom: 3px solid #2D8B3C; padding-bottom: 10px;">
+                    🏀 Próximos Partidos de Valsequillo
+                </h2>
+            """
+            
+            # Función auxiliar para generar tabla
+            def generar_tabla(partidos, titulo, color):
+                if not partidos:
+                    return ""
+                
+                tabla_html = f"""
+                <h3 style="color: {color}; margin-top: 20px;">{titulo}</h3>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    <thead>
+                        <tr style="background-color: {color}; color: white;">
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Día/Hora</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Categoría</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Partido</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Lugar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                """
+                
+                for p in partidos:
+                    # Resaltar si jugamos en casa
+                    estilo_fila = ""
+                    if "valsequillo" in p['local'].lower():
+                        estilo_fila = "background-color: #e8f5e9;"  # Verde claro
+                        icono_casa = "🏠 "
+                    else:
+                        icono_casa = "✈️ "
+                    
+                    tabla_html += f"""
+                    <tr style="{estilo_fila}">
+                        <td style="padding: 8px; border: 1px solid #ddd;">{icono_casa}<strong>{p['dia']}</strong><br>{p['hora']}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">{p['categoria']}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">
+                            <strong>{p['local']}</strong><br>
+                            vs<br>
+                            <strong>{p['visitante']}</strong>
+                        </td>
+                        <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">{p['lugar']}</td>
+                    </tr>
+                    """
+                
+                tabla_html += """
+                    </tbody>
+                </table>
+                """
+                return tabla_html
+            
+            # Añadir tabla definitivos
+            html += generar_tabla(partidos_definitivos, "📋 Jornada Definitiva", "#2D8B3C")
+            
+            # Añadir tabla provisionales
+            html += generar_tabla(partidos_provisionales, "📝 Jornada Provisional", "#FF9800")
+            
+            html += """
+                <p style="color: #666; font-size: 12px; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 10px;">
+                    💡 <strong>Leyenda:</strong><br>
+                    🏠 = Partido en casa (Valsequillo juega como local)<br>
+                    ✈️ = Partido fuera (Valsequillo visita)<br><br>
+                    📎 Descarga el calendario (.ics) adjunto para añadir estos partidos a tu móvil automáticamente.
+                </p>
+            </div>
+            """
+            
+            # Guardar a archivo
+            preview_path = Path("email_preview.html")
+            preview_path.write_text(html, encoding='utf-8')
+            logger.info(f"Preview de email generado: {preview_path}")
+            
+            return preview_path
+            
+        except Exception as e:
+            logger.error(f"Error generando preview de email: {e}")
             return None
     
     def ejecutar(self) -> List[Path]:
@@ -1026,6 +1119,11 @@ class ScraperBaloncesto:
             if ics_prov: 
                 pdfs_generados.append(ics_prov)
                 logger.info(f" ICS Calendario: {ics_prov}")
+            
+        # 5. Generar preview HTML para el email
+        preview_email = self.generar_preview_email(partidos_definitivos, partidos_provisionales)
+        if preview_email:
+            pdfs_generados.append(preview_email)
             
         logger.info("=== Proceso completado exitosamente ===")
         

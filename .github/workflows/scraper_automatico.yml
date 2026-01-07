@@ -43,6 +43,15 @@ jobs:
       id: date
       run: echo "date=$(date +'%d/%m/%Y')" >> $GITHUB_OUTPUT
     
+    - name: Leer preview del email
+      id: email_preview
+      run: |
+        if [ -f "email_preview.html" ]; then
+          echo "found=true" >> $GITHUB_OUTPUT
+        else
+          echo "found=false" >> $GITHUB_OUTPUT
+        fi
+    
     - name: Enviar email con PDF adjunto
       if: success()
       uses: dawidd6/action-send-mail@v3
@@ -55,14 +64,8 @@ jobs:
         subject: '🏀 Partidos Valsequillo - ${{ steps.date.outputs.date }}'
         to: ${{ secrets.EMAIL_TO }}
         from: CB Valsequillo Scraper
-        html_body: |
-          <h2>🏀 Partidos del CB Valsequillo</h2>
-          <p>Hola,</p>
-          <p>Te adjunto los PDFs y el calendario (.ics) con los próximos partidos.</p>
-          <p><strong>Generado automáticamente:</strong> ${{ github.event.repository.updated_at }}</p>
-          <hr>
-          <p style="color: #2D8B3C;"><strong>Club de Baloncesto Valsequillo - Roque Grande</strong></p>
-          <p style="font-size: 12px; color: #666;">Este email se envía automáticamente cada lunes.</p>
+        html_body: file://email_preview.html
+        convert_markdown: false
         attachments: PARTIDOS_VALSEQUILLO_*
     
     - name: Subir resultados como artefacto (backup)
