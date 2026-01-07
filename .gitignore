@@ -21,7 +21,7 @@ ENV/
 jornada_*.pdf
 partidos_*.xlsx
 PARTIDOS_*.pdf
-partidos_anteriores.json
+# partidos_anteriores.json - IMPORTANTE: Este NO se ignora para detectar cambios
 
 # Logs
 *.log
