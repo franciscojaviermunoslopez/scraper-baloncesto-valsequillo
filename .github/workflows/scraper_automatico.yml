@@ -64,9 +64,6 @@ jobs:
           echo "✅ Sin cambios - Calendario actualizado silenciosamente"
         fi
     
-    - name: Generar web pública (GitHub Pages)
-      run: python generar_web.py
-    
     - name: Listar archivos generados
       id: list_files
       run: |

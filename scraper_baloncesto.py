@@ -1374,6 +1374,14 @@ class ScraperBaloncesto:
         if partidos_definitivos:
             self.sincronizar_google_calendar(partidos_definitivos)
         
+        # 4.6. Generar web pública con los partidos definitivos
+        try:
+            from generar_web import generar_web_publica
+            generar_web_publica()
+            logger.info("✅ Web pública generada")
+        except Exception as e:
+            logger.error(f"Error generando web pública: {e}")
+        
         # 5. Generar preview HTML para el email (incluyendo cambios si los hay)
         preview_email = self.generar_preview_email(partidos_definitivos, partidos_provisionales, cambios_detectados)
         if preview_email:
