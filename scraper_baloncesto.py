@@ -888,6 +888,7 @@ class ScraperBaloncesto:
         """
         try:
             c = Calendar()
+            c.creator = "CB Valsequillo Scraper <scraper@valsequillo.com>"
             count = 0
             
             for p in partidos:
@@ -919,6 +920,8 @@ class ScraperBaloncesto:
                         e.duration = timedelta(hours=1, minutes=45) # Duración estimada partido
                         e.location = p['lugar']
                         e.description = f"Categoría: {p['categoria']}\nJornada: {tipo_jornada}\nOrigen: {p.get('origen','')}"
+                        # Añadir UID único (importante para iOS)
+                        e.uid = f"{inicio.strftime('%Y%m%d%H%M')}-{p['local'][:10].replace(' ', '')}-valsequillo@scraper.local"
                         
                         c.events.add(e)
                         count += 1
