@@ -131,7 +131,6 @@ class ScraperBaloncesto:
             # Filtrar para quedarnos con la versión MÁS RECIENTE de cada jornada
             # Ejemplo: Si hay "Jornada 14 DEFINITIVA 2" y "Jornada 14 DEFINITIVA 3", solo cogemos la 3
             jornadas_unicas = {}
-            import re  # Mover aquí, fuera del bucle
             
             for j in jornadas_recientes:
                 # Extraer número de jornada (ej: "Jornada 14 (05-11 Ene) DEFINITIVA 3" -> "14-DEFINITIVA")
