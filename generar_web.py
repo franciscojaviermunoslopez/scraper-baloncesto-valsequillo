@@ -8,28 +8,37 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-def generar_web_publica():
-    """Genera index.html con los partidos del snapshot"""
+def generar_web_publica(partidos_definitivos=None):
+    """
+    Genera index.html con los próximos partidos
     
-    # Leer partidos del snapshot
-    snapshot_path = Path("partidos_anteriores.json")
-    partidos = []
+    Args:
+        partidos_definitivos: Lista de partidos definitivos. Si es None, lee del snapshot.
+    """
     
-    if snapshot_path.exists():
-        try:
-            with open(snapshot_path, 'r', encoding='utf-8') as f:
-                contenido = f.read().strip()
-                if contenido:  # Verificar que no esté vacío
-                    partidos = json.loads(contenido)
-                else:
-                    print("⚠️ Archivo JSON vacío, generando web sin partidos")
-        except json.JSONDecodeError:
-            print("⚠️ Error leyendo JSON, generando web sin partidos")
+    # Si no se pasaron partidos, leer del snapshot
+    if partidos_definitivos is None:
+        snapshot_path = Path("partidos_anteriores.json")
+        partidos = []
+        
+        if snapshot_path.exists():
+            try:
+                with open(snapshot_path, 'r', encoding='utf-8') as f:
+                    contenido = f.read().strip()
+                    if contenido:
+                        partidos = json.loads(contenido)
+                    else:
+                        print("⚠️ Archivo JSON vacío, generando web sin partidos")
+            except json.JSONDecodeError:
+                print("⚠️ Error leyendo JSON, generando web sin partidos")
+        else:
+            print("⚠️ No se encontró snapshot, generando web sin partidos")
+        
+        # Filtrar solo definitivos
+        partidos_def = [p for p in partidos if p.get('jornada_tipo') == 'DEFINITIVA']
     else:
-        print("⚠️ No se encontró snapshot, generando web sin partidos")
-    
-    # Filtrar solo definitivos
-    partidos_def = [p for p in partidos if p.get('jornada_tipo') == 'DEFINITIVA']
+        # Usar los partidos que se pasaron como parámetro
+        partidos_def = partidos_definitivos
     
     # Generar HTML
     html = """<!DOCTYPE html>

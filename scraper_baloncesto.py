@@ -1377,7 +1377,7 @@ class ScraperBaloncesto:
         # 4.6. Generar web pública con los partidos definitivos
         try:
             from generar_web import generar_web_publica
-            generar_web_publica()
+            generar_web_publica(partidos_definitivos)  # Pasar los partidos recién extraídos
             logger.info("✅ Web pública generada")
         except Exception as e:
             logger.error(f"Error generando web pública: {e}")
