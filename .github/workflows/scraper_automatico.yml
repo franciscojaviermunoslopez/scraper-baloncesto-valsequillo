@@ -64,6 +64,9 @@ jobs:
           echo "✅ Sin cambios - Calendario actualizado silenciosamente"
         fi
     
+    - name: Generar web pública (GitHub Pages)
+      run: python generar_web.py
+    
     - name: Listar archivos generados
       id: list_files
       run: |
@@ -141,12 +144,12 @@ jobs:
           jornada_*.pdf
         retention-days: 30
     
-    - name: Commit y push de snapshot (para detectar cambios futuros)
+    - name: Commit y push de snapshot + web pública
       if: success()
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add partidos_anteriores.json || true
-        git diff --quiet && git diff --staged --quiet || (git commit -m "📊 Actualizar snapshot de partidos - $(date +'%Y-%m-%d')" && git push)
+        git add partidos_anteriores.json docs/ || true
+        git diff --quiet && git diff --staged --quiet || (git commit -m "📊 Actualizar snapshot + web pública - $(date +'%Y-%m-%d')" && git push)
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
