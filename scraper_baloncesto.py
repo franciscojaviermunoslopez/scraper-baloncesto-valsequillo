@@ -128,8 +128,26 @@ class ScraperBaloncesto:
                         'tipo': 'DEFINITIVA' if 'definitiva' in texto else 'PROVISIONAL'
                     })
             
-            # Tomar las 3 más recientes (o menos si no hay tantas)
-            jornadas_a_procesar = jornadas_recientes[:3]
+            # Filtrar para quedarnos con la versión MÁS RECIENTE de cada jornada
+            # Ejemplo: Si hay "Jornada 14 DEFINITIVA 2" y "Jornada 14 DEFINITIVA 3", solo cogemos la 3
+            jornadas_unicas = {}
+            for j in jornadas_recientes:
+                # Extraer número de jornada (ej: "Jornada 14 (05-11 Ene) DEFINITIVA 3" -> "14-DEFINITIVA")
+                # O si no tiene número: "Jornada DEFINITIVA" -> "0-DEFINITIVA"
+                import re
+                match = re.search(r'Jornada\s+(\d+)?\s*.*?(DEFINITIVA|PROVISIONAL)', j['titulo'], re.IGNORECASE)
+                if match:
+                    num_jornada = match.group(1) if match.group(1) else "0"  # Si no hay número, usar "0"
+                    tipo = match.group(2).upper()
+                    clave = f"{num_jornada}-{tipo}"
+                    
+                    # Si ya existe, comparar versiones y quedarnos con la más reciente
+                    # (Las jornadas están ordenadas de más nueva a más vieja en la web)
+                    if clave not in jornadas_unicas:
+                        jornadas_unicas[clave] = j
+            
+            # Convertir de vuelta a lista y tomar las 3 más recientes
+            jornadas_a_procesar = list(jornadas_unicas.values())[:3]
             
             if not jornadas_a_procesar:
                 logger.error("No se encontraron jornadas definitivas ni provisionales")
@@ -159,6 +177,12 @@ class ScraperBaloncesto:
                     tipo_sufijo = jornada['tipo'].lower()
                     pdf_path = Path(f"jornada_{tipo_sufijo}_{timestamp}.pdf")
                     pdf_path.write_bytes(pdf_response.content)
+                    
+                    # Validar que sea realmente un PDF (no un HTML de error/login)
+                    if not pdf_response.content.startswith(b'%PDF'):
+                        logger.warning(f"⚠️ El archivo descargado NO es un PDF válido (posible redirect o login). Descartando: {jornada['titulo']}")
+                        pdf_path.unlink()  # Borrar el archivo basura
+                        continue
                     
                     pdfs_descargados.append({
                         'path': pdf_path,
