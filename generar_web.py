@@ -214,44 +214,50 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
                        0 0 0 4px rgba(45, 139, 60, 0.2);
         }
         
-        /* TOOLTIP AL HOVER */
-        .card-tooltip {
+        /* ICONO INFO */
+        .info-icon {
             position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100%);
+            top: 15px;
+            left: 15px;
+            width: 24px;
+            height: 24px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            cursor: help;
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+        
+        .info-icon:hover {
+            background: var(--primary);
+            transform: scale(1.2);
+        }
+        
+        .info-icon-tooltip {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 8px;
             background: rgba(0, 0, 0, 0.95);
             color: white;
-            padding: 12px 18px;
-            border-radius: 10px;
-            font-size: 0.85em;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.8em;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            transition: opacity 0.3s ease;
             z-index: 9999;
-            min-width: 250px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
             white-space: nowrap;
         }
         
-        .card:hover .card-tooltip {
+        .info-icon:hover .info-icon-tooltip {
             opacity: 1;
-            transform: translateX(-50%) translateY(105%);
-        }
-        
-        .tooltip-row {
-            margin: 5px 0;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .tooltip-label {
-            opacity: 0.7;
-            font-size: 0.9em;
-        }
-        
-        .tooltip-value {
-            font-weight: 600;
         }
         
         .card.casa { border-top-color: var(--primary); }
@@ -718,19 +724,13 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             <div class="card {clase_card}" data-category="{p.get('categoria_filtro', p['categoria'])}" data-type="{p.get('jornada_tipo', 'DEFINITIVA')}">
                 <div class="card-badge {badge_class}">{badge_text}</div>
                 
-                <!-- Tooltip con info extra -->
-                <div class="card-tooltip">
-                    <div class="tooltip-row">
-                        <span class="tooltip-label">Tipo:</span>
-                        <span class="tooltip-value">{tipo_jornada}</span>
-                    </div>
-                    <div class="tooltip-row">
-                        <span class="tooltip-label">Categoría:</span>
-                        <span class="tooltip-value">{p['categoria']}</span>
-                    </div>
-                    <div class="tooltip-row">
-                        <span class="tooltip-label">Ubicación:</span>
-                        <span class="tooltip-value">{'Casa' if es_casa else 'Fuera' if es_visitante else 'N/A'}</span>
+                <!-- Icono info con tooltip -->
+                <div class="info-icon" title="Más información">
+                    ℹ️
+                    <div class="info-icon-tooltip">
+                        <div>📋 {tipo_jornada}</div>
+                        <div>🏷️ {p.get('categoria_filtro', p['categoria'])}</div>
+                        <div>📍 {'Casa' if es_casa else 'Fuera' if es_visitante else 'N/A'}</div>
                     </div>
                 </div>
                 
