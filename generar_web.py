@@ -539,12 +539,21 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
     </div>
 """
     
-    # Extraer categorías únicas de los partidos
+    # Función para normalizar categorías (quitar códigos numéricos)
+    def normalizar_categoria(cat):
+        import re
+        # Eliminar códigos numéricos del inicio (ej: "78270 Junior Masc S-B" -> "Junior Masc S-B")
+        return re.sub(r'^\d+\s+', '', cat).strip()
+    
+    # Extraer categorías únicas NORMALIZADAS
     categorias = set()
     if todos_partidos:
         for p in todos_partidos:
             cat = p.get('categoria', 'Sin categoría')
-            categorias.add(cat)
+            cat_normalizada = normalizar_categoria(cat)
+            categorias.add(cat_normalizada)
+            # Añadir categoría normalizada al partido para filtrado
+            p['categoria_filtro'] = cat_normalizada
     
     # Generar botones de filtro si hay partidos
     if todos_partidos:
@@ -603,7 +612,7 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             maps_url = f"https://www.google.com/maps/search/?api=1&query={lugar_query}"
             
             html += f"""
-            <div class="card {clase_card}" data-category="{p['categoria']}" data-type="{p.get('jornada_tipo', 'DEFINITIVA')}">
+            <div class="card {clase_card}" data-category="{p.get('categoria_filtro', p['categoria'])}" data-type="{p.get('jornada_tipo', 'DEFINITIVA')}">
                 <div class="card-badge {badge_class}">{badge_text}</div>
                 
                 <div class="date-row">
