@@ -358,7 +358,7 @@
                 // Parsear manualmente para evitar conflicto de nombre de columna
                 // Asumir que la segunda columna "Rival" (puntos) viene después de "Nosotros"
                 const valores = Object.values(p);
-                const puntosRival = parseInt(valores[6]) || 0;  // Índice 6 = columna "Rival" (puntos)
+                const puntosRival = parseInt(p['Puntos Rival']) || 0  // Índice 6 = columna "Rival" (puntos)
 
                 const claseResultado = resultado === 'VICTORIA' ? 'victoria' :
                     resultado === 'DERROTA' ? 'derrota' : '';
