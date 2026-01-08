@@ -391,9 +391,10 @@ def generar_web_publica(partidos_definitivos=None):
             except:
                 continue
         
-        # Calcular días restantes
+        # Calcular días restantes desde inicio del día actual
         if proximo_partido:
-            dias_restantes = (proximo_partido['fecha'] - hoy).days
+            hoy_inicio = hoy.replace(hour=0, minute=0, second=0, microsecond=0)
+            dias_restantes = (proximo_partido['fecha'] - hoy_inicio).days
     
     # Añadir banner de próximo partido si existe
     if proximo_partido:
