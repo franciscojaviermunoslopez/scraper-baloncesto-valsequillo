@@ -343,6 +343,58 @@ def generar_web_publica(partidos_definitivos=None):
             margin-top: 5px; 
             color: rgba(255,255,255,0.7);
         }
+        
+        /* FILTROS */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .card.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -355,6 +407,37 @@ def generar_web_publica(partidos_definitivos=None):
         <h1>CB Valsequillo</h1>
         <p class="subtitle">Próximos Partidos Oficiales</p>
     </header>
+
+    <script>
+        // Script de filtrado por categoría
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const cards = document.querySelectorAll('.card');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Quitar active de todos los botones
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // Añadir active al botón clickeado
+                    this.classList.add('active');
+                    
+                    const category = this.getAttribute('data-category');
+                    
+                    cards.forEach(card => {
+                        if (category === 'all') {
+                            card.classList.remove('hidden');
+                        } else {
+                            if (card.getAttribute('data-category') === category) {
+                                card.classList.remove('hidden');
+                            } else {
+                                card.classList.add('hidden');
+                            }
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 """
     
     # Calcular próximo partido y días restantes
@@ -432,6 +515,31 @@ def generar_web_publica(partidos_definitivos=None):
     </div>
 """
     
+    # Extraer categorías únicas de los partidos
+    categorias = set()
+    if partidos_def:
+        for p in partidos_def:
+            cat = p.get('categoria', 'Sin categoría')
+            categorias.add(cat)
+    
+    # Generar botones de filtro si hay categorías
+    if categorias:
+        categorias_ordenadas = sorted(list(categorias))
+        html += """
+    <div class="container">
+        <div class="filter-section">
+            <span class="filter-label">Filtrar por categoría:</span>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-category="all">TODOS</button>
+"""
+        for cat in categorias_ordenadas:
+            html += f'                <button class="filter-btn" data-category="{cat}">{cat}</button>\n'
+        
+        html += """            </div>
+        </div>
+    </div>
+"""
+    
     html += """
     <div class="container">
         <div class="grid">
@@ -461,7 +569,7 @@ def generar_web_publica(partidos_definitivos=None):
             maps_url = f"https://www.google.com/maps/search/?api=1&query={lugar_query}"
             
             html += f"""
-            <div class="card {clase_card}">
+            <div class="card {clase_card}" data-category="{p['categoria']}">
                 <div class="card-badge {badge_class}">{badge_text}</div>
                 
                 <div class="date-row">
