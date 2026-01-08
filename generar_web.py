@@ -248,6 +248,86 @@ def generar_web_publica(partidos_definitivos=None):
             margin-top: auto;
         }
         
+        /* BANNER PRÓXIMO PARTIDO */
+        .next-match-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(45, 139, 60, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            color: white;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .countdown {
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 20px 30px;
+            text-align: center;
+            min-width: 180px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .countdown-emoji {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 10px;
+            animation: bounce 1s ease infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .countdown-text {
+            font-size: 1.5em;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .next-match-info {
+            flex: 1;
+        }
+        
+        .next-match-teams {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .vs-small {
+            font-size: 0.7em;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+        
+        .next-match-details {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            .next-match-banner {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .countdown {
+                min-width: 100%;
+            }
+        }
+        
         .empty-state {
             grid-column: 1 / -1;
             text-align: center;
@@ -275,7 +355,83 @@ def generar_web_publica(partidos_definitivos=None):
         <h1>CB Valsequillo</h1>
         <p class="subtitle">Próximos Partidos Oficiales</p>
     </header>
-
+"""
+    
+    # Calcular próximo partido y días restantes
+    proximo_partido = None
+    dias_restantes = None
+    
+    if partidos_def:
+        from datetime import datetime, timedelta
+        hoy = datetime.now()
+        
+        # Buscar el partido más cercano
+        for p in partidos_def:
+            try:
+                # Parsear fecha
+                fecha_str = p.get('dia', '')
+                import re
+                match = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', fecha_str)
+                if match:
+                    fecha_pura = match.group(1)
+                    partes = fecha_pura.split('/')
+                    if len(partes[2]) == 2:
+                        partes[2] = "20" + partes[2]
+                    
+                    dia, mes, año = partes
+                    fecha_partido = datetime(int(año), int(mes), int(dia))
+                    
+                    # Solo partidos futuros
+                    if fecha_partido >= hoy.replace(hour=0, minute=0, second=0, microsecond=0):
+                        if proximo_partido is None or fecha_partido < proximo_partido['fecha']:
+                            proximo_partido = {
+                                'fecha': fecha_partido,
+                                'partido': p
+                            }
+            except:
+                continue
+        
+        # Calcular días restantes
+        if proximo_partido:
+            dias_restantes = (proximo_partido['fecha'] - hoy).days
+    
+    # Añadir banner de próximo partido si existe
+    if proximo_partido:
+        p = proximo_partido['partido']
+        
+        # Texto según días restantes
+        if dias_restantes == 0:
+            texto_dias = "¡HOY!"
+            emoji = "🔥"
+        elif dias_restantes == 1:
+            texto_dias = "MAÑANA"
+            emoji = "⚡"
+        else:
+            texto_dias = f"EN {dias_restantes} DÍAS"
+            emoji = "⏰"
+        
+        html += f"""
+    <div class="container">
+        <div class="next-match-banner">
+            <div class="countdown">
+                <span class="countdown-emoji">{emoji}</span>
+                <span class="countdown-text">{texto_dias}</span>
+            </div>
+            <div class="next-match-info">
+                <div class="next-match-teams">🏀 {p['local']} <span class="vs-small">vs</span> {p['visitante']}</div>
+                <div class="next-match-details">
+                    <span>📅 {p['dia']}</span>
+                    <span style="margin: 0 10px;">•</span>
+                    <span>🕐 {p['hora']}</span>
+                    <span style="margin: 0 10px;">•</span>
+                    <span>📍 {p['lugar']}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+"""
+    
+    html += """
     <div class="container">
         <div class="grid">
 """
