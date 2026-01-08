@@ -216,6 +216,86 @@
             margin-top: auto;
         }
         
+        /* BANNER PRÓXIMO PARTIDO */
+        .next-match-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(45, 139, 60, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            color: white;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .countdown {
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 20px 30px;
+            text-align: center;
+            min-width: 180px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .countdown-emoji {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 10px;
+            animation: bounce 1s ease infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .countdown-text {
+            font-size: 1.5em;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .next-match-info {
+            flex: 1;
+        }
+        
+        .next-match-teams {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .vs-small {
+            font-size: 0.7em;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+        
+        .next-match-details {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            .next-match-banner {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .countdown {
+                min-width: 100%;
+            }
+        }
+        
         .empty-state {
             grid-column: 1 / -1;
             text-align: center;
@@ -243,6 +323,25 @@
         <h1>CB Valsequillo</h1>
         <p class="subtitle">Próximos Partidos Oficiales</p>
     </header>
+
+    <div class="container">
+        <div class="next-match-banner">
+            <div class="countdown">
+                <span class="countdown-emoji">🔥</span>
+                <span class="countdown-text">¡HOY!</span>
+            </div>
+            <div class="next-match-info">
+                <div class="next-match-teams">🏀 Valsequillo (35008832) <span class="vs-small">vs</span> CB Telde (35002857)</div>
+                <div class="next-match-details">
+                    <span>📅 Viernes 09/01/26</span>
+                    <span style="margin: 0 10px;">•</span>
+                    <span>🕐 18:30</span>
+                    <span style="margin: 0 10px;">•</span>
+                    <span>📍 IES Valsequillo</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="container">
         <div class="grid">
@@ -326,7 +425,7 @@
     </div>
 
     <footer>
-        <p>Actualizado automáticamente: 08/01/2026 09:41</p>
+        <p>Actualizado automáticamente: 08/01/2026 10:02</p>
         <p style="font-size: 0.8em; margin-top: 10px;">
             <a href="https://calendar.google.com/calendar/u/0?cid=8976b0fd29f0b7a34ccb24da504eba0b3057084f4c776a0d37ba06a72e4140f4@group.calendar.google.com" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">
                 📅 Suscribirse al Calendario Oficial
