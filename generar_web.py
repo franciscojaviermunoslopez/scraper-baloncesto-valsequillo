@@ -159,11 +159,96 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             border-top: 5px solid transparent;
             position: relative;
             overflow: hidden;
+            
+            /* Animación al cargar */
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
         }
         
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Delay escalonado para cada tarjeta */
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:nth-child(6) { animation-delay: 0.6s; }
+        
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        /* DESTACAR PARTIDOS DE VALSEQUILLO */
+        .card.valsequillo-destacado {
+            border-top-width: 7px;
+            box-shadow: 0 10px 30px rgba(45, 139, 60, 0.3), 
+                        0 0 0 3px rgba(45, 139, 60, 0.1);
+            animation: fadeInUp 0.6s ease forwards, pulseGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(45, 139, 60, 0.3), 
+                           0 0 0 3px rgba(45, 139, 60, 0.1);
+            }
+            50% {
+                box-shadow: 0 15px 35px rgba(45, 139, 60, 0.4), 
+                           0 0 0 4px rgba(45, 139, 60, 0.2);
+            }
+        }
+        
+        .card.valsequillo-destacado:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(45, 139, 60, 0.4),
+                       0 0 0 4px rgba(45, 139, 60, 0.2);
+        }
+        
+        /* TOOLTIP AL HOVER */
+        .card-tooltip {
+            position: absolute;
+            top: 50px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+            min-width: 200px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .card:hover .card-tooltip {
+            opacity: 1;
+        }
+        
+        .tooltip-row {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .tooltip-label {
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+        
+        .tooltip-value {
+            font-weight: 600;
         }
         
         .card.casa { border-top-color: var(--primary); }
@@ -592,16 +677,28 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         for p in todos_partidos:
             es_provisional = p.get('jornada_tipo') == 'PROVISIONAL'
             es_casa = "valsequillo" in p.get('local', '').lower()
+            es_visitante = "valsequillo" in p.get('visitante', '').lower()
+            es_partido_valsequillo = es_casa or es_visitante
             
             # Clase de card según tipo y ubicación
+            clases = []
             if es_provisional:
-                clase_card = "provisional"
+                clases.append("provisional")
                 badge_class = "badge-provisional"
                 badge_text = "⚠️ PROVISIONAL"
             else:
-                clase_card = "casa" if es_casa else "fuera"
+                if es_casa:
+                    clases.append("casa")
+                else:
+                    clases.append("fuera")
                 badge_class = "badge-casa" if es_casa else "badge-fuera"
                 badge_text = "🏠 EN CASA" if es_casa else "✈️ VISITANTE"
+            
+            # Añadir clase destacado si juega Valsequillo
+            if es_partido_valsequillo:
+                clases.append("valsequillo-destacado")
+            
+            clase_card = " ".join(clases)
             
             # Limpiar nombres largos de equipos
             local = p['local'].replace("(35008832)", "").replace("(35008831)", "").strip()
@@ -611,9 +708,28 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             lugar_query = p['lugar'].replace(" ", "+")
             maps_url = f"https://www.google.com/maps/search/?api=1&query={lugar_query}"
             
+            # Tipo de jornada para tooltip
+            tipo_jornada = "DEFINITIVA" if not es_provisional else "PROVISIONAL"
+            
             html += f"""
             <div class="card {clase_card}" data-category="{p.get('categoria_filtro', p['categoria'])}" data-type="{p.get('jornada_tipo', 'DEFINITIVA')}">
                 <div class="card-badge {badge_class}">{badge_text}</div>
+                
+                <!-- Tooltip con info extra -->
+                <div class="card-tooltip">
+                    <div class="tooltip-row">
+                        <span class="tooltip-label">Tipo:</span>
+                        <span class="tooltip-value">{tipo_jornada}</span>
+                    </div>
+                    <div class="tooltip-row">
+                        <span class="tooltip-label">Categoría:</span>
+                        <span class="tooltip-value">{p['categoria']}</span>
+                    </div>
+                    <div class="tooltip-row">
+                        <span class="tooltip-label">Ubicación:</span>
+                        <span class="tooltip-value">{'Casa' if es_casa else 'Fuera' if es_visitante else 'N/A'}</span>
+                    </div>
+                </div>
                 
                 <div class="date-row">
                     <span style="font-size: 1.2em;">📅</span>
