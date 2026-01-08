@@ -542,7 +542,7 @@
             }
         }
 
-        document.getElementById('statsForm').addEventListener('submit', function (e) {
+        document.getElementById('statsForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             // Recoger datos del partido
@@ -550,6 +550,7 @@
                 rival: document.getElementById('rival').value,
                 fecha: document.getElementById('fecha').value,
                 ubicacion: document.getElementById('ubicacion').value,
+                categoria: document.getElementById('categoria').value,
                 resultado: {
                     cuarto1: [
                         parseInt(document.getElementById('resultado1_nosotros').value) || 0,
@@ -612,25 +613,40 @@
 
             console.log('Datos del partido:', partidoData);
 
-            // Guardar en localStorage (temporal)
+            // Guardar en localStorage (backup local)
             const partidos = JSON.parse(localStorage.getItem('partidos') || '[]');
             partidos.push(partidoData);
             localStorage.setItem('partidos', JSON.stringify(partidos));
 
-            // Mostrar mensaje éxito
-            const successMsg = document.getElementById('successMessage');
-            successMsg.classList.add('show');
-            setTimeout(() => successMsg.classList.remove('show'), 3000);
+            // Enviar a Google Sheets
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysqmCqi5yR2XXQhejRtTkQd7-fa-Rn0sW8E9VPJpsDfjoUIsymLdWciEtoyd1SUxm7/exec';
 
-            // Limpiar formulario
-            setTimeout(() => {
-                if (confirm('Partido guardado. ¿Limpiar formulario para registrar otro partido?')) {
-                    resetForm();
-                }
-            }, 500);
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(partidoData)
+                });
 
-            // TODO: Aquí se enviará a Google Sheets
-            alert('Partido guardado localmente!\n\n(En la versión final se guardará en Google Sheets)');
+                // Mostrar mensaje éxito
+                const successMsg = document.getElementById('successMessage');
+                successMsg.classList.add('show');
+                setTimeout(() => successMsg.classList.remove('show'), 4000);
+
+                // Limpiar formulario
+                setTimeout(() => {
+                    if (confirm('✅ Partido guardado en Google Sheets!\n\n¿Limpiar formulario para registrar otro partido?')) {
+                        resetForm();
+                    }
+                }, 500);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('⚠️ Hubo un error al guardar en Google Sheets.\n\nDatos guardados localmente como backup.\nRevisa tu conexión a internet.');
+            }
         });
     </script>
 </body>
