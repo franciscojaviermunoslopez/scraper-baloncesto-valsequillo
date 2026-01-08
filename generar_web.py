@@ -158,7 +158,7 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border-top: 5px solid transparent;
             position: relative;
-            overflow: hidden;
+            overflow: visible; /* Cambiado para que tooltip se vea */
             
             /* Animación al cargar */
             opacity: 0;
@@ -228,7 +228,7 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease, transform 0.3s ease;
-            z-index: 10;
+            z-index: 9999;
             min-width: 250px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
             white-space: nowrap;
