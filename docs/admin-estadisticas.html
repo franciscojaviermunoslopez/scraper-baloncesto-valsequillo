@@ -358,7 +358,6 @@
                                 <th style="width: 60px;">#</th>
                                 <th style="min-width: 120px;">Jugador</th>
                                 <th style="width: 70px;" title="Puntos Totales">PTS</th>
-                                <th title="Tiros de Campo" colspan="5">TC (1-5)</th>
                                 <th title="Tiros Libres">TL</th>
                                 <th title="Rebotes Defensivos">RD</th>
                                 <th title="Rebotes Ofensivos">RO</th>
@@ -565,11 +564,6 @@
                 <td><input type="number" name="dorsal_${playerCount}" min="0" max="99" placeholder="#" value="${dorsal}" style="width: 50px;"></td>
                 <td><input type="text" name="nombre_${playerCount}" placeholder="Nombre" value="${nombre}" style="width: 120px;"></td>
                 <td><input type="number" name="puntos_${playerCount}" min="0" placeholder="0" style="width: 60px; background: #fffacd; font-weight: 600;"></td>
-                <td><input type="number" name="tc1_${playerCount}" min="0" placeholder="0" style="width: 50px;"></td>
-                <td><input type="number" name="tc2_${playerCount}" min="0" placeholder="0" style="width: 50px;"></td>
-                <td><input type="number" name="tc3_${playerCount}" min="0" placeholder="0" style="width: 50px;"></td>
-                <td><input type="number" name="tc4_${playerCount}" min="0" placeholder="0" style="width: 50px;"></td>
-                <td><input type="number" name="tc5_${playerCount}" min="0" placeholder="0" style="width: 50px;"></td>
                 <td>
                     <div style="display: flex; gap: 2px; align-items: center; justify-content: center;">
                         <input type="number" name="tl_hecho_${playerCount}" min="0" placeholder="0" style="width: 40px;">
@@ -652,24 +646,17 @@
                         dorsal: parseInt(dorsal) || '',
                         nombre: nombre || '',
                         puntos: parseInt(inputs[2].value) || 0,
-                        tc: [
-                            parseInt(inputs[3].value) || 0,
-                            parseInt(inputs[4].value) || 0,
-                            parseInt(inputs[5].value) || 0,
-                            parseInt(inputs[6].value) || 0,
-                            parseInt(inputs[7].value) || 0
-                        ],
                         tl: {
-                            hecho: parseInt(inputs[8].value) || 0,
-                            intento: parseInt(inputs[9].value) || 0
+                            hecho: parseInt(inputs[3].value) || 0,
+                            intento: parseInt(inputs[4].value) || 0
                         },
-                        rd: parseInt(inputs[10].value) || 0,
-                        ro: parseInt(inputs[11].value) || 0,
-                        rt: parseInt(inputs[12].value) || 0,
-                        rec: parseInt(inputs[13].value) || 0,
-                        per: parseInt(inputs[14].value) || 0,
-                        ass: parseInt(inputs[15].value) || 0,
-                        tap: parseInt(inputs[16].value) || 0
+                        rd: parseInt(inputs[5].value) || 0,
+                        ro: parseInt(inputs[6].value) || 0,
+                        rt: parseInt(inputs[7].value) || 0,
+                        rec: parseInt(inputs[8].value) || 0,
+                        per: parseInt(inputs[9].value) || 0,
+                        ass: parseInt(inputs[10].value) || 0,
+                        tap: parseInt(inputs[11].value) || 0
                     };
                     partidoData.jugadores.push(jugador);
                 }
