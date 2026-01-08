@@ -284,27 +284,16 @@
                         partidos: 0,
                         puntos: 0,
                         rebotes: 0,
-                        asistencias: 0,
-                        tl_hecho: 0,
-                        tl_intento: 0
+                        asistencias: 0
                     };
                 }
 
                 statsJugadores[nombre].partidos++;
 
-                // Calcular puntos totales de TC (asumiendo TC1=1pt, TC2=2pts, etc.)
-                const tc1 = parseInt(j['TC1']) || 0;
-                const tc2 = parseInt(j['TC2']) || 0;
-                const tc3 = parseInt(j['TC3']) || 0;
-                const tc4 = parseInt(j['TC4']) || 0;
-                const tc5 = parseInt(j['TC5']) || 0;
-                const tlHecho = parseInt(j['TL Hecho']) || 0;
-
-                statsJugadores[nombre].puntos += tc1 + tc2 + tc3 + tc4 + tc5 + tlHecho;
+                // Usar campo PUNTOS directamente
+                statsJugadores[nombre].puntos += parseInt(j['PUNTOS']) || 0;
                 statsJugadores[nombre].rebotes += parseInt(j['RT']) || 0;
                 statsJugadores[nombre].asistencias += parseInt(j['ASS']) || 0;
-                statsJugadores[nombre].tl_hecho += tlHecho;
-                statsJugadores[nombre].tl_intento += parseInt(j['TL Intento']) || 0;
             });
 
             // Convertir a array y ordenar
@@ -358,21 +347,30 @@
             container.innerHTML = '';
 
             partidos.forEach(p => {
-                const nosotros = parseInt(p['Nosotros']) || 0;
-                const rival = parseInt(p['Rival']) || 0;
-                const tipoResultado = p['Resultado'] || '';
+                // Acceder a columnas correctamente
+                // Columnas: Timestamp, Fecha, Rival(nombre), Ubicación, Categoría, Nosotros, Rival(puntos), Resultado, ...
+                const fecha = p['Fecha'] || '';
+                const ubicacion = p['Ubicación'] || '';
+                const nombreRival = p['Rival'] || '';  // Columna 3
+                const puntosNosotros = parseInt(p['Nosotros']) || 0;  // Columna 6
+                const resultado = p['Resultado'] || '';  // Columna 8
 
-                const claseResultado = tipoResultado === 'VICTORIA' ? 'victoria' :
-                    tipoResultado === 'DERROTA' ? 'derrota' : '';
+                // Parsear manualmente para evitar conflicto de nombre de columna
+                // Asumir que la segunda columna "Rival" (puntos) viene después de "Nosotros"
+                const valores = Object.values(p);
+                const puntosRival = parseInt(valores[6]) || 0;  // Índice 6 = columna "Rival" (puntos)
 
-                const icono = tipoResultado === 'VICTORIA' ? '✅' :
-                    tipoResultado === 'DERROTA' ? '❌' : '⚪';
+                const claseResultado = resultado === 'VICTORIA' ? 'victoria' :
+                    resultado === 'DERROTA' ? 'derrota' : '';
+
+                const icono = resultado === 'VICTORIA' ? '✅' :
+                    resultado === 'DERROTA' ? '❌' : '⚪';
 
                 container.innerHTML += `
                     <div class="resultado-item ${claseResultado}">
-                        <div class="resultado-fecha">${p['Fecha']} - ${p['Ubicación']}</div>
+                        <div class="resultado-fecha">${fecha} - ${ubicacion}</div>
                         <div class="resultado-marcador">
-                            ${icono} VALSEQUILLO ${nosotros} - ${rival} ${p['Rival']}
+                            ${icono} VALSEQUILLO ${puntosNosotros} - ${puntosRival} ${nombreRival}
                         </div>
                     </div>
                 `;
