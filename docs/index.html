@@ -180,23 +180,26 @@
         /* TOOLTIP AL HOVER */
         .card-tooltip {
             position: absolute;
-            top: 50px;
-            right: 15px;
-            background: rgba(0, 0, 0, 0.9);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            background: rgba(0, 0, 0, 0.95);
             color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 12px 18px;
+            border-radius: 10px;
             font-size: 0.85em;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease;
             z-index: 10;
-            min-width: 200px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            min-width: 250px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            white-space: nowrap;
         }
         
         .card:hover .card-tooltip {
             opacity: 1;
+            transform: translateX(-50%) translateY(105%);
         }
         
         .tooltip-row {
@@ -797,7 +800,7 @@
     </div>
 
     <footer>
-        <p>Actualizado automáticamente: 08/01/2026 11:47</p>
+        <p>Actualizado automáticamente: 08/01/2026 11:53</p>
         <p style="font-size: 0.8em; margin-top: 10px;">
             <a href="https://calendar.google.com/calendar/u/0?cid=8976b0fd29f0b7a34ccb24da504eba0b3057084f4c776a0d37ba06a72e4140f4@group.calendar.google.com" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">
                 📅 Suscribirse al Calendario Oficial
