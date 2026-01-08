@@ -251,65 +251,6 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         
         .location-link:hover { color: var(--primary); text-decoration: underline; }
         
-        /* COMPARTIR */
-        .share-section {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .share-label {
-            font-size: 0.85em;
-            color: #999;
-            font-weight: 600;
-        }
-        
-        .share-buttons {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .share-btn {
-            width: 36px;
-            height: 36px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-        }
-        
-        .share-icon {
-            font-size: 1.2em;
-        }
-        
-        .share-btn:hover {
-            transform: translateY(-3px) scale(1.1);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .share-btn.whatsapp:hover {
-            background: #25D366;
-            border-color: #25D366;
-        }
-        
-        .share-btn.telegram:hover {
-            background: #0088cc;
-            border-color: #0088cc;
-        }
-        
-        .share-btn.copy:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-        
         /* FOOTER */
         footer {
             text-align: center;
@@ -521,53 +462,6 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             });
         });
     </script>
-    
-    <script>
-        // Script de compartir
-        document.addEventListener('DOMContentLoaded', function() {
-            const shareButtons = document.querySelectorAll('.share-btn');
-            const webUrl = 'https://franciscojaviermunoslopez.github.io/scraper-baloncesto-valsequillo/';
-            
-            shareButtons.forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const partido = this.getAttribute('data-partido');
-                    const fecha = this.getAttribute('data-fecha');
-                    const hora = this.getAttribute('data-hora');
-                    const lugar = this.getAttribute('data-lugar');
-                    
-                    const mensaje = `🏀 *${partido}*\n📅 ${fecha} - ${hora}\n📍 ${lugar}\n\n🔗 ${webUrl}`;
-                    const mensajeUrl = encodeURIComponent(mensaje);
-                    
-                    if (this.classList.contains('whatsapp')) {
-                        // WhatsApp
-                        window.open(`https://wa.me/?text=${mensajeUrl}`, '_blank');
-                    } else if (this.classList.contains('telegram')) {
-                        // Telegram
-                        window.open(`https://t.me/share/url?url=${encodeURIComponent(webUrl)}&text=${mensajeUrl}`, '_blank');
-                    } else if (this.classList.contains('copy')) {
-                        // Copiar al portapapeles
-                        const textoLimpio = mensaje.replace(/\*/g, '');
-                        navigator.clipboard.writeText(textoLimpio).then(() => {
-                            // Cambiar icono temporalmente
-                            const icon = this.querySelector('.share-icon');
-                            const iconOriginal = icon.textContent;
-                            icon.textContent = '✅';
-                            this.style.background = 'var(--primary)';
-                            this.style.borderColor = 'var(--primary)';
-                            
-                            setTimeout(() => {
-                                icon.textContent = iconOriginal;
-                                this.style.background = 'white';
-                                this.style.borderColor = '#e0e0e0';
-                            }, 2000);
-                        });
-                    }
-                });
-            });
-        });
-    </script>
 """
     
     # Calcular próximo partido y días restantes
@@ -740,21 +634,6 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
                     <a href="{maps_url}" target="_blank" class="location-link">
                         📍 {p['lugar']}
                     </a>
-                </div>
-                
-                <div class="share-section">
-                    <span class="share-label">Compartir:</span>
-                    <div class="share-buttons">
-                        <button class="share-btn whatsapp" data-partido="{local} vs {visitante}" data-fecha="{p['dia']}" data-hora="{p['hora']}" data-lugar="{p['lugar']}" title="Compartir por WhatsApp">
-                            <span class="share-icon">📱</span>
-                        </button>
-                        <button class="share-btn telegram" data-partido="{local} vs {visitante}" data-fecha="{p['dia']}" data-hora="{p['hora']}" data-lugar="{p['lugar']}" title="Compartir por Telegram">
-                            <span class="share-icon">✈️</span>
-                        </button>
-                        <button class="share-btn copy" data-partido="{local} vs {visitante}" data-fecha="{p['dia']}" data-hora="{p['hora']}" data-lugar="{p['lugar']}" title="Copiar info">
-                            <span class="share-icon">📋</span>
-                        </button>
-                    </div>
                 </div>
             </div>
             """
