@@ -357,6 +357,7 @@
                             <tr>
                                 <th style="width: 60px;">#</th>
                                 <th style="min-width: 120px;">Jugador</th>
+                                <th style="width: 70px;" title="Puntos Totales">PTS</th>
                                 <th title="Tiros de Campo" colspan="5">TC (1-5)</th>
                                 <th title="Tiros Libres">TL</th>
                                 <th title="Rebotes Defensivos">RD</th>
@@ -393,21 +394,82 @@
     </div>
 
     <script>
+        // ROSTER SENIOR MASCULINO
+        const ROSTER_SENIOR = [
+            { dorsal: 3, nombre: 'AYOZE' },
+            { dorsal: 4, nombre: 'ACORÁN' },
+            { dorsal: 5, nombre: 'JORGE' },
+            { dorsal: 7, nombre: 'FRAN' },
+            { dorsal: 8, nombre: 'PARRAS' },
+            { dorsal: 9, nombre: 'GUILLE' },
+            { dorsal: 11, nombre: 'COLL' },
+            { dorsal: 14, nombre: 'ALEJANDRO NAVARRO' },
+            { dorsal: 15, nombre: 'MANU' },
+            { dorsal: 19, nombre: 'MARCOS' },
+            { dorsal: 21, nombre: 'GEO' },
+            { dorsal: 23, nombre: 'BOLA' },
+            { dorsal: 28, nombre: 'RUBEN' },
+            { dorsal: 32, nombre: 'EGO' }
+        ];
+
         let playerCount = 0;
         let partidosData = [];
 
         // Cargar partidos al iniciar
         window.onload = function () {
-            addPlayer();
-            addPlayer();
-            addPlayer();
+            // Cargar roster automáticamente
+            ROSTER_SENIOR.forEach(jugador => {
+                addPlayer(jugador.dorsal, jugador.nombre);
+            });
 
             // Establecer fecha de hoy por defecto
             document.getElementById('fecha').valueAsDate = new Date();
 
             // Cargar partidos desde JSON
             cargarPartidos();
+
+            // Añadir listeners para cálculo automático de resultado
+            setupAutoCalculate();
         };
+
+        function setupAutoCalculate() {
+            // Obtener todos los inputs de cuartos
+            const inputs = [
+                'resultado1_nosotros', 'resultado1_rival',
+                'resultado2_nosotros', 'resultado2_rival',
+                'resultado3_nosotros', 'resultado3_rival',
+                'resultado4_nosotros', 'resultado4_rival'
+            ];
+
+            // Añadir listener a cada input
+            inputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('input', calcularResultadoFinal);
+                }
+            });
+        }
+
+        function calcularResultadoFinal() {
+            // Sumar cuartos de nosotros
+            const nosotros =
+                (parseInt(document.getElementById('resultado1_nosotros').value) || 0) +
+                (parseInt(document.getElementById('resultado2_nosotros').value) || 0) +
+                (parseInt(document.getElementById('resultado3_nosotros').value) || 0) +
+                (parseInt(document.getElementById('resultado4_nosotros').value) || 0);
+
+            // Sumar cuartos del rival
+            const rival =
+                (parseInt(document.getElementById('resultado1_rival').value) || 0) +
+                (parseInt(document.getElementById('resultado2_rival').value) || 0) +
+                (parseInt(document.getElementById('resultado3_rival').value) || 0) +
+                (parseInt(document.getElementById('resultado4_rival').value) || 0);
+
+            // Actualizar resultado final
+            document.getElementById('resultado_final_nosotros').value = nosotros;
+            document.getElementById('resultado_final_rival').value = rival;
+        }
+
 
         async function cargarPartidos() {
             try {
@@ -494,14 +556,15 @@
             alert(`✅ Datos cargados:\n\nRival: ${rival}\nFecha: ${partido.dia}\nUbicación: ${esLocal ? 'Casa' : 'Fuera'}\n\nAhora rellena las estadísticas de los jugadores.`);
         });
 
-        function addPlayer() {
+        function addPlayer(dorsal = '', nombre = '') {
             playerCount++;
             const tbody = document.getElementById('playersBody');
             const row = tbody.insertRow();
 
             row.innerHTML = `
-                <td><input type="number" name="dorsal_${playerCount}" min="0" max="99" placeholder="#" style="width: 50px;"></td>
-                <td><input type="text" name="nombre_${playerCount}" placeholder="Nombre" style="width: 120px;"></td>
+                <td><input type="number" name="dorsal_${playerCount}" min="0" max="99" placeholder="#" value="${dorsal}" style="width: 50px;"></td>
+                <td><input type="text" name="nombre_${playerCount}" placeholder="Nombre" value="${nombre}" style="width: 120px;"></td>
+                <td><input type="number" name="puntos_${playerCount}" min="0" placeholder="0" style="width: 60px; background: #fffacd; font-weight: 600;"></td>
                 <td><input type="number" name="tc1_${playerCount}" min="0" placeholder="0" style="width: 50px;"></td>
                 <td><input type="number" name="tc2_${playerCount}" min="0" placeholder="0" style="width: 50px;"></td>
                 <td><input type="number" name="tc3_${playerCount}" min="0" placeholder="0" style="width: 50px;"></td>
@@ -588,24 +651,25 @@
                     const jugador = {
                         dorsal: parseInt(dorsal) || '',
                         nombre: nombre || '',
+                        puntos: parseInt(inputs[2].value) || 0,
                         tc: [
-                            parseInt(inputs[2].value) || 0,
                             parseInt(inputs[3].value) || 0,
                             parseInt(inputs[4].value) || 0,
                             parseInt(inputs[5].value) || 0,
-                            parseInt(inputs[6].value) || 0
+                            parseInt(inputs[6].value) || 0,
+                            parseInt(inputs[7].value) || 0
                         ],
                         tl: {
-                            hecho: parseInt(inputs[7].value) || 0,
-                            intento: parseInt(inputs[8].value) || 0
+                            hecho: parseInt(inputs[8].value) || 0,
+                            intento: parseInt(inputs[9].value) || 0
                         },
-                        rd: parseInt(inputs[9].value) || 0,
-                        ro: parseInt(inputs[10].value) || 0,
-                        rt: parseInt(inputs[11].value) || 0,
-                        rec: parseInt(inputs[12].value) || 0,
-                        per: parseInt(inputs[13].value) || 0,
-                        ass: parseInt(inputs[14].value) || 0,
-                        tap: parseInt(inputs[15].value) || 0
+                        rd: parseInt(inputs[10].value) || 0,
+                        ro: parseInt(inputs[11].value) || 0,
+                        rt: parseInt(inputs[12].value) || 0,
+                        rec: parseInt(inputs[13].value) || 0,
+                        per: parseInt(inputs[14].value) || 0,
+                        ass: parseInt(inputs[15].value) || 0,
+                        tap: parseInt(inputs[16].value) || 0
                     };
                     partidoData.jugadores.push(jugador);
                 }
