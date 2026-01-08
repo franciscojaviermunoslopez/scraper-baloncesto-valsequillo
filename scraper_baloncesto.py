@@ -1396,6 +1396,14 @@ class ScraperBaloncesto:
         except Exception as e:
             logger.error(f"Error generando web pública: {e}")
         
+        # 4.7. Copiar snapshot JSON a docs/ para acceso desde formulario estadísticas
+        try:
+            import shutil
+            shutil.copy('partidos_anteriores.json', 'docs/partidos_anteriores.json')
+            logger.info("✅ JSON copiado a docs/")
+        except Exception as e:
+            logger.error(f"Error copiando JSON a docs/: {e}")
+        
         # 5. Generar preview HTML para el email (incluyendo cambios si los hay)
         preview_email = self.generar_preview_email(partidos_definitivos, partidos_provisionales, cambios_detectados)
         if preview_email:

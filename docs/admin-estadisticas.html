@@ -411,8 +411,8 @@
 
         async function cargarPartidos() {
             try {
-                // Intentar cargar desde la misma carpeta
-                const response = await fetch('../partidos_anteriores.json');
+                // Cargar desde la misma carpeta docs
+                const response = await fetch('./partidos_anteriores.json');
                 if (!response.ok) throw new Error('No se pudo cargar');
 
                 const data = await response.json();
