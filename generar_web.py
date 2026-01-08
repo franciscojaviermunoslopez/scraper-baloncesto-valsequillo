@@ -395,85 +395,6 @@ def generar_web_publica(partidos_definitivos=None):
         .card.hidden {
             display: none;
         }
-        
-        /* MAPA DE PABELLONES */
-        .section-title {
-            font-size: 2em;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 25px;
-            text-align: center;
-        }
-        
-        .locations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        
-        .location-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .location-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-        }
-        
-        .location-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-        
-        .location-icon {
-            font-size: 2em;
-        }
-        
-        .location-name {
-            font-size: 1.1em;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin: 0;
-        }
-        
-        .location-stats {
-            margin-bottom: 15px;
-        }
-        
-        .stat-badge {
-            background: #f5f5f5;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            color: #666;
-            font-weight: 600;
-        }
-        
-        .location-btn {
-            display: inline-block;
-            width: 100%;
-            padding: 12px;
-            background: var(--primary);
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .location-btn:hover {
-            background: var(--primary-dark);
-            transform: scale(1.02);
-        }
     </style>
 </head>
 <body>
@@ -684,59 +605,10 @@ def generar_web_publica(partidos_definitivos=None):
     else:
         calendar_url = "https://calendar.google.com"
     
-    html += f"""
-        </div>
-    </div>
-    
-    <!-- MAPA DE PABELLONES -->
-"""
-    
-    # Extraer ubicaciones únicas
-    ubicaciones = {}
-    if partidos_def:
-        for p in partidos_def:
-            lugar = p.get('lugar', '').strip()
-            if lugar and lugar not in ubicaciones:
-                ubicaciones[lugar] = {
-                    'nombre': lugar,
-                    'partidos': 0
-                }
-            if lugar in ubicaciones:
-                ubicaciones[lugar]['partidos'] += 1
-    
-    if ubicaciones:
-        html += """
-    <div class="container">
-        <h2 class="section-title">📍 Mapa de Pabellones</h2>
-        <div class="locations-grid">
-"""
-        for ubicacion, info in sorted(ubicaciones.items(), key=lambda x: x[1]['partidos'], reverse=True):
-            # Crear enlace a Google Maps
-            ubicacion_query = ubicacion.replace(" ", "+")
-            maps_link = f"https://www.google.com/maps/search/?api=1&query={ubicacion_query}+Gran+Canaria"
-            
-            html += f"""
-            <div class="location-card">
-                <div class="location-header">
-                    <span class="location-icon">📍</span>
-                    <h3 class="location-name">{ubicacion}</h3>
-                </div>
-                <div class="location-stats">
-                    <span class="stat-badge">{info['partidos']} {'partido' if info['partidos'] == 1 else 'partidos'}</span>
-                </div>
-                <a href="{maps_link}" target="_blank" class="location-btn">
-                    Ver en Google Maps →
-                </a>
-            </div>
-"""
-        
-        html += """
-        </div>
-    </div>
-"""
-    
     now = datetime.now().strftime("%d/%m/%Y %H:%M")
     html += f"""
+        </div>
+    </div>
 
     <footer>
         <p>Actualizado automáticamente: {now}</p>
