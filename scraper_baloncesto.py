@@ -1262,11 +1262,15 @@ class ScraperBaloncesto:
                         inicio_naive = datetime.strptime(fecha_hora_str, "%d/%m/%Y %H:%M")
                         inicio = inicio_naive.replace(tzinfo=ZoneInfo("Atlantic/Canary"))
                         
+                        # Determinar si es provisional o definitivo
+                        es_provisional = p.get('jornada_tipo') == 'PROVISIONAL'
+                        titulo_prefix = "⚠️ PROVISIONAL: " if es_provisional else ""
+                        
                         # Crear evento
                         event = {
-                            'summary': f"🏀 {p['local']} vs {p['visitante']}",
+                            'summary': f"{titulo_prefix}🏀 {p['local']} vs {p['visitante']}",
                             'location': p['lugar'],
-                            'description': f"Categoría: {p['categoria']}\nCompetición: CB Valsequillo\n\nCalendario actualizado automáticamente cada lunes.",
+                            'description': f"Categoría: {p['categoria']}\nTipo: {p.get('jornada_tipo', 'N/A')}\nCompetición: CB Valsequillo\n\nCalendario actualizado automáticamente cada día a las 8 AM.",
                             'start': {
                                 'dateTime': inicio.isoformat(),
                                 'timeZone': 'Atlantic/Canary',
@@ -1379,9 +1383,10 @@ class ScraperBaloncesto:
                 pdfs_generados.append(ics_prov)
                 logger.info(f" ICS Calendario: {ics_prov}")
             
-        # 4.5. Sincronizar con Google Calendar (solo partidos DEFINITIVOS)
-        if partidos_definitivos:
-            self.sincronizar_google_calendar(partidos_definitivos)
+        # 4.5. Sincronizar con Google Calendar (TODOS los partidos: definitivos + provisionales)
+        todos_los_partidos = partidos_definitivos + partidos_provisionales
+        if todos_los_partidos:
+            self.sincronizar_google_calendar(todos_los_partidos)
         
         # 4.6. Generar web pública con los partidos definitivos
         try:
