@@ -426,10 +426,9 @@
                 // Ordenar por fecha descendente (más recientes primero)
                 const partidosFiltrados = data
                     .filter(p => {
-                        // Filtrar senior (si tiene la categoría en el nombre)
+                        // Filtrar senior (case-insensitive)
                         const esSenior = p.categoria &&
-                            (p.categoria.toLowerCase().includes('sen') ||
-                                p.categoria.toLowerCase().includes('senior'));
+                            p.categoria.toLowerCase().includes('sen');
                         return esSenior;
                     })
                     .sort((a, b) => {
