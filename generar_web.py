@@ -217,23 +217,26 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         /* TOOLTIP AL HOVER */
         .card-tooltip {
             position: absolute;
-            top: 50px;
-            right: 15px;
-            background: rgba(0, 0, 0, 0.9);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            background: rgba(0, 0, 0, 0.95);
             color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 12px 18px;
+            border-radius: 10px;
             font-size: 0.85em;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease;
             z-index: 10;
-            min-width: 200px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            min-width: 250px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            white-space: nowrap;
         }
         
         .card:hover .card-tooltip {
             opacity: 1;
+            transform: translateX(-50%) translateY(105%);
         }
         
         .tooltip-row {
