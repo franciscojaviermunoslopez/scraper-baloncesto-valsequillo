@@ -311,6 +311,58 @@
             margin-top: 5px; 
             color: rgba(255,255,255,0.7);
         }
+        
+        /* FILTROS */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .card.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -323,6 +375,37 @@
         <h1>CB Valsequillo</h1>
         <p class="subtitle">Próximos Partidos Oficiales</p>
     </header>
+
+    <script>
+        // Script de filtrado por categoría
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const cards = document.querySelectorAll('.card');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Quitar active de todos los botones
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // Añadir active al botón clickeado
+                    this.classList.add('active');
+                    
+                    const category = this.getAttribute('data-category');
+                    
+                    cards.forEach(card => {
+                        if (category === 'all') {
+                            card.classList.remove('hidden');
+                        } else {
+                            if (card.getAttribute('data-category') === category) {
+                                card.classList.remove('hidden');
+                            } else {
+                                card.classList.add('hidden');
+                            }
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 
     <div class="container">
         <div class="next-match-banner">
@@ -344,9 +427,21 @@
     </div>
 
     <div class="container">
+        <div class="filter-section">
+            <span class="filter-label">Filtrar por categoría:</span>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-category="all">TODOS</button>
+                <button class="filter-btn" data-category="77878  Cad Masc S-B">77878  Cad Masc S-B</button>
+                <button class="filter-btn" data-category="78270  Junior Masc S-B">78270  Junior Masc S-B</button>
+                <button class="filter-btn" data-category="81262  Sen Masc 2ª F G-B">81262  Sen Masc 2ª F G-B</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
         <div class="grid">
 
-            <div class="card casa">
+            <div class="card casa" data-category="78270  Junior Masc S-B">
                 <div class="card-badge badge-casa">🏠 EN CASA</div>
                 
                 <div class="date-row">
@@ -371,7 +466,7 @@
                 </div>
             </div>
             
-            <div class="card fuera">
+            <div class="card fuera" data-category="81262  Sen Masc 2ª F G-B">
                 <div class="card-badge badge-fuera">✈️ VISITANTE</div>
                 
                 <div class="date-row">
@@ -396,7 +491,7 @@
                 </div>
             </div>
             
-            <div class="card fuera">
+            <div class="card fuera" data-category="77878  Cad Masc S-B">
                 <div class="card-badge badge-fuera">✈️ VISITANTE</div>
                 
                 <div class="date-row">
@@ -425,7 +520,7 @@
     </div>
 
     <footer>
-        <p>Actualizado automáticamente: 08/01/2026 10:06</p>
+        <p>Actualizado automáticamente: 08/01/2026 10:14</p>
         <p style="font-size: 0.8em; margin-top: 10px;">
             <a href="https://calendar.google.com/calendar/u/0?cid=8976b0fd29f0b7a34ccb24da504eba0b3057084f4c776a0d37ba06a72e4140f4@group.calendar.google.com" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">
                 📅 Suscribirse al Calendario Oficial
