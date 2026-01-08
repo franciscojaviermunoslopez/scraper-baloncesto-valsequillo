@@ -8,13 +8,14 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-def generar_web_publica(partidos_definitivos=None):
+def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
     """
-    Genera index.html con diseño PREMIUM y soporte para logo
+    Genera index.html con diseño PREMIUM
+    Muestra tanto definitivos como provisionales
     """
     
     # 1. Obtener datos
-    if partidos_definitivos is None:
+    if partidos_definitivos is None and partidos_provisionales is None:
         snapshot_path = Path("partidos_anteriores.json")
         partidos = []
         if snapshot_path.exists():
@@ -25,9 +26,13 @@ def generar_web_publica(partidos_definitivos=None):
                         partidos = json.loads(content)
             except:
                 pass
-        partidos_def = [p for p in partidos if p.get('jornada_tipo') == 'DEFINITIVA']
-    else:
-        partidos_def = partidos_definitivos
+        partidos_definitivos = [p for p in partidos if p.get('jornada_tipo') == 'DEFINITIVA']
+        partidos_provisionales = [p for p in partidos if p.get('jornada_tipo') == 'PROVISIONAL']
+    
+    # Combinar ambos tipos
+    partidos_def = partidos_definitivos if partidos_definitivos else []
+    partidos_prov = partidos_provisionales if partidos_provisionales else []
+    todos_partidos = partidos_def + partidos_prov
     
     # 2. Generar HTML con diseño mejorado
     html = """<!DOCTYPE html>
@@ -163,6 +168,7 @@ def generar_web_publica(partidos_definitivos=None):
         
         .card.casa { border-top-color: var(--primary); }
         .card.fuera { border-top-color: var(--accent); }
+        .card.provisional { border-top-color: #FF6B00; border-top-width: 6px; }
         
         .card-badge {
             position: absolute;
@@ -177,6 +183,12 @@ def generar_web_publica(partidos_definitivos=None):
         
         .badge-casa { background: #e8f5e9; color: var(--primary); }
         .badge-fuera { background: #fff3e0; color: var(--accent); }
+        .badge-provisional { background: #FFEACC; color: #FF6B00; animation: blink 2s ease-in-out infinite; }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
         
         .date-row {
             display: flex;
@@ -409,7 +421,7 @@ def generar_web_publica(partidos_definitivos=None):
     </header>
 
     <script>
-        // Script de filtrado por categoría
+        // Script de filtrado por categoría y tipo
         document.addEventListener('DOMContentLoaded', function() {
             const filterBtns = document.querySelectorAll('.filter-btn');
             const cards = document.querySelectorAll('.card');
@@ -422,16 +434,28 @@ def generar_web_publica(partidos_definitivos=None):
                     this.classList.add('active');
                     
                     const category = this.getAttribute('data-category');
+                    const type = this.getAttribute('data-type');
                     
                     cards.forEach(card => {
-                        if (category === 'all') {
+                        const cardCategory = card.getAttribute('data-category');
+                        const cardType = card.getAttribute('data-type');
+                        
+                        let showCard = true;
+                        
+                        // Filtro por categoría
+                        if (category !== 'all' && cardCategory !== category) {
+                            showCard = false;
+                        }
+                        
+                        // Filtro por tipo
+                        if (type !== 'all' && cardType !== type) {
+                            showCard = false;
+                        }
+                        
+                        if (showCard) {
                             card.classList.remove('hidden');
                         } else {
-                            if (card.getAttribute('data-category') === category) {
-                                card.classList.remove('hidden');
-                            } else {
-                                card.classList.add('hidden');
-                            }
+                            card.classList.add('hidden');
                         }
                     });
                 });
@@ -444,12 +468,12 @@ def generar_web_publica(partidos_definitivos=None):
     proximo_partido = None
     dias_restantes = None
     
-    if partidos_def:
+    if todos_partidos:
         from datetime import datetime, timedelta
         hoy = datetime.now()
         
         # Buscar el partido más cercano
-        for p in partidos_def:
+        for p in todos_partidos:
             try:
                 # Parsear fecha
                 fecha_str = p.get('dia', '')
@@ -517,23 +541,25 @@ def generar_web_publica(partidos_definitivos=None):
     
     # Extraer categorías únicas de los partidos
     categorias = set()
-    if partidos_def:
-        for p in partidos_def:
+    if todos_partidos:
+        for p in todos_partidos:
             cat = p.get('categoria', 'Sin categoría')
             categorias.add(cat)
     
-    # Generar botones de filtro si hay categorías
-    if categorias:
+    # Generar botones de filtro si hay partidos
+    if todos_partidos:
         categorias_ordenadas = sorted(list(categorias))
         html += """
     <div class="container">
         <div class="filter-section">
-            <span class="filter-label">Filtrar por categoría:</span>
+            <span class="filter-label">Filtrar por:</span>
             <div class="filter-buttons">
-                <button class="filter-btn active" data-category="all">TODOS</button>
+                <button class="filter-btn active" data-category="all" data-type="all">TODOS</button>
+                <button class="filter-btn" data-category="all" data-type="DEFINITIVA">DEFINITIVOS</button>
+                <button class="filter-btn" data-category="all" data-type="PROVISIONAL">PROVISIONALES</button>
 """
         for cat in categorias_ordenadas:
-            html += f'                <button class="filter-btn" data-category="{cat}">{cat}</button>\n'
+            html += f'                <button class="filter-btn" data-category="{cat}" data-type="all">{cat}</button>\n'
         
         html += """            </div>
         </div>
@@ -545,20 +571,28 @@ def generar_web_publica(partidos_definitivos=None):
         <div class="grid">
 """
     
-    if not partidos_def:
+    if not todos_partidos:
         html += """
         <div class="empty-state">
             <div style="font-size: 3em; margin-bottom: 20px;">🏀</div>
-            <h3>No hay partidos definitivos programados</h3>
+            <h3>No hay partidos programados</h3>
             <p>Vuelve a consultar el próximo lunes</p>
         </div>
         """
     else:
-        for p in partidos_def:
+        for p in todos_partidos:
+            es_provisional = p.get('jornada_tipo') == 'PROVISIONAL'
             es_casa = "valsequillo" in p.get('local', '').lower()
-            clase_card = "casa" if es_casa else "fuera"
-            badge_class = "badge-casa" if es_casa else "badge-fuera"
-            badge_text = "🏠 EN CASA" if es_casa else "✈️ VISITANTE"
+            
+            # Clase de card según tipo y ubicación
+            if es_provisional:
+                clase_card = "provisional"
+                badge_class = "badge-provisional"
+                badge_text = "⚠️ PROVISIONAL"
+            else:
+                clase_card = "casa" if es_casa else "fuera"
+                badge_class = "badge-casa" if es_casa else "badge-fuera"
+                badge_text = "🏠 EN CASA" if es_casa else "✈️ VISITANTE"
             
             # Limpiar nombres largos de equipos
             local = p['local'].replace("(35008832)", "").replace("(35008831)", "").strip()
@@ -569,7 +603,7 @@ def generar_web_publica(partidos_definitivos=None):
             maps_url = f"https://www.google.com/maps/search/?api=1&query={lugar_query}"
             
             html += f"""
-            <div class="card {clase_card}" data-category="{p['categoria']}">
+            <div class="card {clase_card}" data-category="{p['categoria']}" data-type="{p.get('jornada_tipo', 'DEFINITIVA')}">
                 <div class="card-badge {badge_class}">{badge_text}</div>
                 
                 <div class="date-row">
@@ -637,7 +671,9 @@ def generar_web_publica(partidos_definitivos=None):
         print(f"✅ Logo copiado a docs/: {logo_filename}")
     
     print(f"✅ Web pública generada: {output_path}")
-    print(f"   Total partidos mostrados: {len(partidos_def)}")
+    print(f"   Partidos definitivos: {len(partidos_def)}")
+    print(f"   Partidos provisionales: {len(partidos_prov)}")
+    print(f"   Total partidos mostrados: {len(todos_partidos)}")
 
 if __name__ == "__main__":
     generar_web_publica()

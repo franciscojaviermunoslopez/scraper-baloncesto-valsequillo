@@ -1388,10 +1388,10 @@ class ScraperBaloncesto:
         if todos_los_partidos:
             self.sincronizar_google_calendar(todos_los_partidos)
         
-        # 4.6. Generar web pública con los partidos definitivos
+        # 4.6. Generar web pública con TODOS los partidos (definitivos + provisionales)
         try:
             from generar_web import generar_web_publica
-            generar_web_publica(partidos_definitivos)  # Pasar los partidos recién extraídos
+            generar_web_publica(partidos_definitivos, partidos_provisionales)
             logger.info("✅ Web pública generada")
         except Exception as e:
             logger.error(f"Error generando web pública: {e}")
