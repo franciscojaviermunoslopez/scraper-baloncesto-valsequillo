@@ -177,52 +177,6 @@
                        0 0 0 4px rgba(45, 139, 60, 0.2);
         }
         
-        /* ICONO INFO */
-        .info-icon {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            width: 24px;
-            height: 24px;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
-            cursor: help;
-            transition: all 0.3s ease;
-            z-index: 5;
-        }
-        
-        .info-icon:hover {
-            background: var(--primary);
-            transform: scale(1.2);
-        }
-        
-        .info-icon-tooltip {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            margin-top: 8px;
-            background: rgba(0, 0, 0, 0.95);
-            color: white;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 0.8em;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 9999;
-            min-width: 200px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-            white-space: nowrap;
-        }
-        
-        .info-icon:hover .info-icon-tooltip {
-            opacity: 1;
-        }
-        
         .card.casa { border-top-color: var(--primary); }
         .card.fuera { border-top-color: var(--accent); }
         .card.provisional { border-top-color: #FF6B00; border-top-width: 6px; }
@@ -559,16 +513,6 @@
             <div class="card casa valsequillo-destacado" data-category="Junior Masc S-B" data-type="DEFINITIVA">
                 <div class="card-badge badge-casa">🏠 EN CASA</div>
                 
-                <!-- Icono info con tooltip -->
-                <div class="info-icon" title="Más información">
-                    ℹ️
-                    <div class="info-icon-tooltip">
-                        <div>📋 DEFINITIVA</div>
-                        <div>🏷️ Junior Masc S-B</div>
-                        <div>📍 Casa</div>
-                    </div>
-                </div>
-                
                 <div class="date-row">
                     <span style="font-size: 1.2em;">📅</span>
                     <div>
@@ -593,16 +537,6 @@
             
             <div class="card fuera valsequillo-destacado" data-category="Sen Masc 2ª F G-B" data-type="DEFINITIVA">
                 <div class="card-badge badge-fuera">✈️ VISITANTE</div>
-                
-                <!-- Icono info con tooltip -->
-                <div class="info-icon" title="Más información">
-                    ℹ️
-                    <div class="info-icon-tooltip">
-                        <div>📋 DEFINITIVA</div>
-                        <div>🏷️ Sen Masc 2ª F G-B</div>
-                        <div>📍 Fuera</div>
-                    </div>
-                </div>
                 
                 <div class="date-row">
                     <span style="font-size: 1.2em;">📅</span>
@@ -629,16 +563,6 @@
             <div class="card fuera valsequillo-destacado" data-category="Cad Masc S-B" data-type="DEFINITIVA">
                 <div class="card-badge badge-fuera">✈️ VISITANTE</div>
                 
-                <!-- Icono info con tooltip -->
-                <div class="info-icon" title="Más información">
-                    ℹ️
-                    <div class="info-icon-tooltip">
-                        <div>📋 DEFINITIVA</div>
-                        <div>🏷️ Cad Masc S-B</div>
-                        <div>📍 Fuera</div>
-                    </div>
-                </div>
-                
                 <div class="date-row">
                     <span style="font-size: 1.2em;">📅</span>
                     <div>
@@ -663,16 +587,6 @@
             
             <div class="card provisional valsequillo-destacado" data-category="Sen Masc 2ª F G-B" data-type="PROVISIONAL">
                 <div class="card-badge badge-provisional">⚠️ PROVISIONAL</div>
-                
-                <!-- Icono info con tooltip -->
-                <div class="info-icon" title="Más información">
-                    ℹ️
-                    <div class="info-icon-tooltip">
-                        <div>📋 PROVISIONAL</div>
-                        <div>🏷️ Sen Masc 2ª F G-B</div>
-                        <div>📍 Casa</div>
-                    </div>
-                </div>
                 
                 <div class="date-row">
                     <span style="font-size: 1.2em;">📅</span>
@@ -699,16 +613,6 @@
             <div class="card provisional valsequillo-destacado" data-category="Cad Masc S-B" data-type="PROVISIONAL">
                 <div class="card-badge badge-provisional">⚠️ PROVISIONAL</div>
                 
-                <!-- Icono info con tooltip -->
-                <div class="info-icon" title="Más información">
-                    ℹ️
-                    <div class="info-icon-tooltip">
-                        <div>📋 PROVISIONAL</div>
-                        <div>🏷️ Cad Masc S-B</div>
-                        <div>📍 Fuera</div>
-                    </div>
-                </div>
-                
                 <div class="date-row">
                     <span style="font-size: 1.2em;">📅</span>
                     <div>
@@ -733,16 +637,6 @@
             
             <div class="card provisional valsequillo-destacado" data-category="Junior Masc S-B" data-type="PROVISIONAL">
                 <div class="card-badge badge-provisional">⚠️ PROVISIONAL</div>
-                
-                <!-- Icono info con tooltip -->
-                <div class="info-icon" title="Más información">
-                    ℹ️
-                    <div class="info-icon-tooltip">
-                        <div>📋 PROVISIONAL</div>
-                        <div>🏷️ Junior Masc S-B</div>
-                        <div>📍 Fuera</div>
-                    </div>
-                </div>
                 
                 <div class="date-row">
                     <span style="font-size: 1.2em;">📅</span>
@@ -770,7 +664,7 @@
     </div>
 
     <footer>
-        <p>Actualizado automáticamente: 08/01/2026 12:06</p>
+        <p>Actualizado automáticamente: 08/01/2026 12:12</p>
         <p style="font-size: 0.8em; margin-top: 10px;">
             <a href="https://calendar.google.com/calendar/u/0?cid=8976b0fd29f0b7a34ccb24da504eba0b3057084f4c776a0d37ba06a72e4140f4@group.calendar.google.com" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">
                 📅 Suscribirse al Calendario Oficial
