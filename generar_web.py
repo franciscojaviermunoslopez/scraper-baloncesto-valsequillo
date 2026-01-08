@@ -214,52 +214,6 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
                        0 0 0 4px rgba(45, 139, 60, 0.2);
         }
         
-        /* ICONO INFO */
-        .info-icon {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            width: 24px;
-            height: 24px;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
-            cursor: help;
-            transition: all 0.3s ease;
-            z-index: 5;
-        }
-        
-        .info-icon:hover {
-            background: var(--primary);
-            transform: scale(1.2);
-        }
-        
-        .info-icon-tooltip {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            margin-top: 8px;
-            background: rgba(0, 0, 0, 0.95);
-            color: white;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 0.8em;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 9999;
-            min-width: 200px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-            white-space: nowrap;
-        }
-        
-        .info-icon:hover .info-icon-tooltip {
-            opacity: 1;
-        }
-        
         .card.casa { border-top-color: var(--primary); }
         .card.fuera { border-top-color: var(--accent); }
         .card.provisional { border-top-color: #FF6B00; border-top-width: 6px; }
@@ -723,16 +677,6 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             html += f"""
             <div class="card {clase_card}" data-category="{p.get('categoria_filtro', p['categoria'])}" data-type="{p.get('jornada_tipo', 'DEFINITIVA')}">
                 <div class="card-badge {badge_class}">{badge_text}</div>
-                
-                <!-- Icono info con tooltip -->
-                <div class="info-icon" title="Más información">
-                    ℹ️
-                    <div class="info-icon-tooltip">
-                        <div>📋 {tipo_jornada}</div>
-                        <div>🏷️ {p.get('categoria_filtro', p['categoria'])}</div>
-                        <div>📍 {'Casa' if es_casa else 'Fuera' if es_visitante else 'N/A'}</div>
-                    </div>
-                </div>
                 
                 <div class="date-row">
                     <span style="font-size: 1.2em;">📅</span>
