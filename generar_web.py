@@ -611,6 +611,8 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             <div class="next-match-info">
                 <div class="next-match-teams">🏀 {p['local']} <span class="vs-small">vs</span> {p['visitante']}</div>
                 <div class="next-match-details">
+                    <span>🏆 {p.get('categoria', 'Sin categoría')}</span>
+                    <span style="margin: 0 10px;">•</span>
                     <span>📅 {p['dia']}</span>
                     <span style="margin: 0 10px;">•</span>
                     <span>🕐 {p['hora']}</span>
