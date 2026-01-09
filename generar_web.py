@@ -491,6 +491,77 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         .card.hidden {
             display: none;
         }
+        
+        /* BARRA COUNTDOWN ÉPICA */
+        .countdown-bar {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        
+        .countdown-bar-title {
+            text-align: center;
+            color: white;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .countdown-boxes {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .countdown-box {
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 15px 20px;
+            min-width: 90px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .countdown-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .countdown-number {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            display: block;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .countdown-label {
+            font-size: 0.75em;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+        
+        @media (max-width: 768px) {
+            .countdown-box {
+                min-width: 70px;
+                padding: 12px 15px;
+            }
+            
+            .countdown-number {
+                font-size: 2em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -621,11 +692,10 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         
         html += f"""
     <div class="container">
-        <div class="next-match-banner" data-match-time="{fecha_partido}">
+        <div class="next-match-banner">
             <div class="countdown">
                 <span class="countdown-emoji">{emoji}</span>
-                <span class="countdown-text" id="countdown-text">{texto_dias}</span>
-                <div id="countdown-detail" style="font-size: 0.6em; margin-top: 5px; opacity: 0.9;"></div>
+                <span class="countdown-text">{texto_dias}</span>
             </div>
             <div class="next-match-info">
                 <div class="next-match-teams">🏀 {p['local']} <span class="vs-small">vs</span> {p['visitante']}</div>
@@ -642,10 +712,34 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         </div>
     </div>
     
+    <div class="container">
+        <div class="countdown-bar" data-match-time="{fecha_partido}">
+            <div class="countdown-bar-title">⏰ PRÓXIMO PARTIDO EN:</div>
+            <div class="countdown-boxes">
+                <div class="countdown-box">
+                    <span class="countdown-number" id="days-count">0</span>
+                    <span class="countdown-label">Días</span>
+                </div>
+                <div class="countdown-box">
+                    <span class="countdown-number" id="hours-count">0</span>
+                    <span class="countdown-label">Horas</span>
+                </div>
+                <div class="countdown-box">
+                    <span class="countdown-number" id="minutes-count">0</span>
+                    <span class="countdown-label">Minutos</span>
+                </div>
+                <div class="countdown-box">
+                    <span class="countdown-number" id="seconds-count">0</span>
+                    <span class="countdown-label">Segundos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script>
         // Cuenta regresiva en tiempo real
         function actualizarCuentaRegresiva() {{
-            const banner = document.querySelector('.next-match-banner');
+            const banner = document.querySelector('.countdown-bar');
             if (!banner) return;
             
             const matchTime = banner.getAttribute('data-match-time');
@@ -655,13 +749,19 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             const fechaPartido = new Date(matchTime);
             const diferencia = fechaPartido - ahora;
             
-            const countdownText = document.getElementById('countdown-text');
-            const countdownDetail = document.getElementById('countdown-detail');
+            const daysEl = document.getElementById('days-count');
+            const hoursEl = document.getElementById('hours-count');
+            const minutesEl = document.getElementById('minutes-count');
+            const secondsEl = document.getElementById('seconds-count');
+            const titleEl = document.querySelector('.countdown-bar-title');
             
             if (diferencia < 0) {{
                 // El partido ya empezó
-                countdownText.textContent = '🔴 EN VIVO';
-                countdownDetail.textContent = '';
+                titleEl.textContent = '🔴 PARTIDO EN VIVO';
+                daysEl.textContent = '0';
+                hoursEl.textContent = '0';
+                minutesEl.textContent = '0';
+                secondsEl.textContent = '0';
                 return;
             }}
             
@@ -671,20 +771,11 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
             const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
             
-            if (dias === 0 && horas < 24) {{
-                // Menos de 24 horas: mostrar detallado
-                countdownText.textContent = '⏰ FALTAN:';
-                countdownDetail.textContent = `${{horas}}h ${{minutos}}m ${{segundos}}s`;
-            }} else if (dias === 0) {{
-                countdownText.textContent = '¡HOY!';
-                countdownDetail.textContent = `En ${{horas}}h ${{minutos}}m`;
-            }} else if (dias === 1) {{
-                countdownText.textContent = 'MAÑANA';
-                countdownDetail.textContent = `(${{horas + 24}}h restantes)`;
-            }} else {{
-                countdownText.textContent = `EN ${{dias}} DÍAS`;
-                countdownDetail.textContent = '';
-            }}
+            // Actualizar números con animación
+            daysEl.textContent = dias;
+            hoursEl.textContent = horas.toString().padStart(2, '0');
+            minutesEl.textContent = minutos.toString().padStart(2, '0');
+            secondsEl.textContent = segundos.toString().padStart(2, '0');
         }}
         
         // Actualizar cada segundo
