@@ -172,10 +172,16 @@ class ScraperBaloncesto:
                     pdf_response = self.session.get(download_link, timeout=30, verify=False)
                     pdf_response.raise_for_status()
                     
-                    # Guardar el PDF
+                    # Guardar el PDF con número de jornada único
                     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                     tipo_sufijo = jornada['tipo'].lower()
-                    pdf_path = Path(f"jornada_{tipo_sufijo}_{timestamp}.pdf")
+                    
+                    # Extraer número de jornada del título (ej: "Jornada 14..." -> "14")
+                    import re
+                    match_jornada = re.search(r'Jornada\s+(\d+)', jornada['titulo'], re.IGNORECASE)
+                    num_jornada = match_jornada.group(1) if match_jornada else timestamp
+                    
+                    pdf_path = Path(f"jornada_{tipo_sufijo}_j{num_jornada}_{timestamp}.pdf")
                     pdf_path.write_bytes(pdf_response.content)
                     
                     # Validar que sea realmente un PDF (no un HTML de error/login)
