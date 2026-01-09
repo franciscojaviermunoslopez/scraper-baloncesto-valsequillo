@@ -177,7 +177,6 @@ class ScraperBaloncesto:
                     tipo_sufijo = jornada['tipo'].lower()
                     
                     # Extraer número de jornada del título (ej: "Jornada 14..." -> "14")
-                    import re
                     match_jornada = re.search(r'Jornada\s+(\d+)', jornada['titulo'], re.IGNORECASE)
                     num_jornada = match_jornada.group(1) if match_jornada else timestamp
                     
