@@ -76,6 +76,7 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CB Valsequillo - Próximos Partidos</title>
+    <link rel="icon" type="image/png" href="logo_valsequillo_hq.png">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
