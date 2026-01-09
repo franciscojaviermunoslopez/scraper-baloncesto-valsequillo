@@ -32,7 +32,22 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
     # Combinar ambos tipos
     partidos_def = partidos_definitivos if partidos_definitivos else []
     partidos_prov = partidos_provisionales if partidos_provisionales else []
-    todos_partidos = partidos_def + partidos_prov
+    
+    # Eliminar duplicados (un partido puede estar varias veces en la federación)
+    # Usar combinación de día+hora+local+visitante como clave única
+    partidos_unicos = {}
+    for p in partidos_def + partidos_prov:
+        # Crear clave única
+        clave = f"{p.get('dia', '')}_{p.get('hora', '')}_{p.get('local', '')}_{p.get('visitante', '')}_{p.get('categoria', '')}"
+        # Si ya existe, priorizar DEFINITIVA sobre PROVISIONAL
+        if clave not in partidos_unicos:
+            partidos_unicos[clave] = p
+        else:
+            # Si el nuevo es DEFINITIVA y el existente es PROVISIONAL, reemplazar
+            if p.get('jornada_tipo') == 'DEFINITIVA' and partidos_unicos[clave].get('jornada_tipo') == 'PROVISIONAL':
+                partidos_unicos[clave] = p
+    
+    todos_partidos = list(partidos_unicos.values())
     
     # 2. Generar HTML con diseño mejorado
     html = """<!DOCTYPE html>
