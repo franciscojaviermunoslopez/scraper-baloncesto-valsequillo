@@ -476,10 +476,11 @@
     </script>
 
     <div class="container">
-        <div class="next-match-banner">
+        <div class="next-match-banner" data-match-time="2026-01-09T18:30:00">
             <div class="countdown">
                 <span class="countdown-emoji">🔥</span>
-                <span class="countdown-text">¡HOY!</span>
+                <span class="countdown-text" id="countdown-text">¡HOY!</span>
+                <div id="countdown-detail" style="font-size: 0.6em; margin-top: 5px; opacity: 0.9;"></div>
             </div>
             <div class="next-match-info">
                 <div class="next-match-teams">🏀 Valsequillo (35008832) <span class="vs-small">vs</span> CB Telde (35002857)</div>
@@ -495,6 +496,57 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        // Cuenta regresiva en tiempo real
+        function actualizarCuentaRegresiva() {
+            const banner = document.querySelector('.next-match-banner');
+            if (!banner) return;
+            
+            const matchTime = banner.getAttribute('data-match-time');
+            if (!matchTime) return;
+            
+            const ahora = new Date();
+            const fechaPartido = new Date(matchTime);
+            const diferencia = fechaPartido - ahora;
+            
+            const countdownText = document.getElementById('countdown-text');
+            const countdownDetail = document.getElementById('countdown-detail');
+            
+            if (diferencia < 0) {
+                // El partido ya empezó
+                countdownText.textContent = '🔴 EN VIVO';
+                countdownDetail.textContent = '';
+                return;
+            }
+            
+            // Calcular tiempo restante
+            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+            
+            if (dias === 0 && horas < 24) {
+                // Menos de 24 horas: mostrar detallado
+                countdownText.textContent = '⏰ FALTAN:';
+                countdownDetail.textContent = `${horas}h ${minutos}m ${segundos}s`;
+            } else if (dias === 0) {
+                countdownText.textContent = '¡HOY!';
+                countdownDetail.textContent = `En ${horas}h ${minutos}m`;
+            } else if (dias === 1) {
+                countdownText.textContent = 'MAÑANA';
+                countdownDetail.textContent = `(${horas + 24}h restantes)`;
+            } else {
+                countdownText.textContent = `EN ${dias} DÍAS`;
+                countdownDetail.textContent = '';
+            }
+        }
+        
+        // Actualizar cada segundo
+        setInterval(actualizarCuentaRegresiva, 1000);
+        // Ejecutar inmediatamente
+        actualizarCuentaRegresiva();
+    </script>
 
     <div class="container">
         <div class="filter-section">
@@ -717,7 +769,7 @@
     </div>
 
     <footer>
-        <p>Actualizado automáticamente: 09/01/2026 12:16</p>
+        <p>Actualizado automáticamente: 09/01/2026 13:11</p>
         <p style="font-size: 0.8em; margin-top: 10px;">
             <a href="https://calendar.google.com/calendar/u/0?cid=8976b0fd29f0b7a34ccb24da504eba0b3057084f4c776a0d37ba06a72e4140f4@group.calendar.google.com" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">
                 📅 Suscribirse al Calendario Oficial
