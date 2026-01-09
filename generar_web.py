@@ -49,6 +49,26 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
     
     todos_partidos = list(partidos_unicos.values())
     
+    # Ordenar por fecha (más cercanos primero)
+    def parsear_fecha(partido):
+        """Convierte 'Viernes 09/01/26' a objeto datetime para ordenar"""
+        try:
+            dia_str = partido.get('dia', '')
+            # Extraer solo la parte de fecha DD/MM/YY
+            import re
+            match = re.search(r'(\d{2})/(\d{2})/(\d{2})', dia_str)
+            if match:
+                dia, mes, anio = match.groups()
+                # Asumir siglo 20XX
+                from datetime import datetime
+                return datetime(2000 + int(anio), int(mes), int(dia))
+            return datetime(2099, 12, 31)  # Fecha muy lejana si no se puede parsear
+        except:
+            from datetime import datetime
+            return datetime(2099, 12, 31)
+    
+    todos_partidos.sort(key=parsear_fecha)
+    
     # 2. Generar HTML con diseño mejorado
     html = """<!DOCTYPE html>
 <html lang="es">
