@@ -137,8 +137,8 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         }
         
         .logo-container {
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             background: transparent;
             border-radius: 50%;
             margin: 0 auto 15px;
@@ -151,8 +151,8 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         }
         
         .logo-img {
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
         }
         
