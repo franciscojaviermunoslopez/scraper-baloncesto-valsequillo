@@ -76,7 +76,7 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CB Valsequillo - Próximos Partidos</title>
-    <link rel="icon" type="image/png" href="logo_valsequillo_hq.png">
+    <link rel="icon" type="image/png" href="logo_club.png">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -498,7 +498,7 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
     <header>
         <div class="logo-container">
             <!-- LOGO: Cambia 'logo.png' por tu archivo -->
-            <img src="logo_valsequillo_hq.png" alt="Logo Club" class="logo-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/33/33736.png'">
+            <img src="logo_club.png" alt="Logo Club" class="logo-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/33/33736.png'">
         </div>
         <h1>CB Valsequillo</h1>
         <p class="subtitle">Próximos Partidos Oficiales</p>
@@ -773,7 +773,7 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
     output_path.write_text(html, encoding='utf-8')
     
     # Copiar logo a docs/ si existe en la raíz
-    logo_filename = "logo_valsequillo_hq.png"
+    logo_filename = "logo_club.png"
     logo_source = Path(logo_filename)
     if logo_source.exists():
         import shutil
