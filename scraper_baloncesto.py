@@ -1167,6 +1167,12 @@ class ScraperBaloncesto:
                     if p_actual['lugar'] != p_anterior['lugar']:
                         cambios_partido.append(f"Lugar: {p_anterior['lugar']} → {p_actual['lugar']}")
                     
+                    # DETECTAR CAMBIO DE PROVISIONAL A DEFINITIVA
+                    if p_actual.get('jornada_tipo') != p_anterior.get('jornada_tipo'):
+                        tipo_ant = p_anterior.get('jornada_tipo', 'DESCONOCIDO')
+                        tipo_act = p_actual.get('jornada_tipo', 'DESCONOCIDO')
+                        cambios_partido.append(f"Estado: {tipo_ant} → {tipo_act}")
+                    
                     if cambios_partido:
                         cambios.append({
                             'partido': clave,
