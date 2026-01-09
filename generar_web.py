@@ -601,13 +601,31 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         else:
             texto_dias = f"EN {dias_restantes} DÍAS"
             emoji = "⏰"
+        # Generar data attributes para JavaScript (fecha y hora del partido)
+        # Convertir "Viernes 09/01/26" "18:30" a timestamp
+        import re
+        from datetime import datetime
+        
+        match_fecha = re.search(r'(\d{2})/(\d{2})/(\d{2})', p['dia'])
+        if match_fecha:
+            dia, mes, anio = match_fecha.groups()
+            hora_match = re.search(r'(\d{1,2}):(\d{2})', p['hora'])
+            if hora_match:
+                hora, minuto = hora_match.groups()
+                # Crear timestamp en formato ISO
+                fecha_partido = f"2026-{mes}-{dia}T{hora.zfill(2)}:{minuto}:00"
+            else:
+                fecha_partido = f"2026-{mes}-{dia}T00:00:00"
+        else:
+            fecha_partido = ""
         
         html += f"""
     <div class="container">
-        <div class="next-match-banner">
+        <div class="next-match-banner" data-match-time="{fecha_partido}">
             <div class="countdown">
                 <span class="countdown-emoji">{emoji}</span>
-                <span class="countdown-text">{texto_dias}</span>
+                <span class="countdown-text" id="countdown-text">{texto_dias}</span>
+                <div id="countdown-detail" style="font-size: 0.6em; margin-top: 5px; opacity: 0.9;"></div>
             </div>
             <div class="next-match-info">
                 <div class="next-match-teams">🏀 {p['local']} <span class="vs-small">vs</span> {p['visitante']}</div>
@@ -623,6 +641,57 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             </div>
         </div>
     </div>
+    
+    <script>
+        // Cuenta regresiva en tiempo real
+        function actualizarCuentaRegresiva() {{
+            const banner = document.querySelector('.next-match-banner');
+            if (!banner) return;
+            
+            const matchTime = banner.getAttribute('data-match-time');
+            if (!matchTime) return;
+            
+            const ahora = new Date();
+            const fechaPartido = new Date(matchTime);
+            const diferencia = fechaPartido - ahora;
+            
+            const countdownText = document.getElementById('countdown-text');
+            const countdownDetail = document.getElementById('countdown-detail');
+            
+            if (diferencia < 0) {{
+                // El partido ya empezó
+                countdownText.textContent = '🔴 EN VIVO';
+                countdownDetail.textContent = '';
+                return;
+            }}
+            
+            // Calcular tiempo restante
+            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+            
+            if (dias === 0 && horas < 24) {{
+                // Menos de 24 horas: mostrar detallado
+                countdownText.textContent = '⏰ FALTAN:';
+                countdownDetail.textContent = `${{horas}}h ${{minutos}}m ${{segundos}}s`;
+            }} else if (dias === 0) {{
+                countdownText.textContent = '¡HOY!';
+                countdownDetail.textContent = `En ${{horas}}h ${{minutos}}m`;
+            }} else if (dias === 1) {{
+                countdownText.textContent = 'MAÑANA';
+                countdownDetail.textContent = `(${{horas + 24}}h restantes)`;
+            }} else {{
+                countdownText.textContent = `EN ${{dias}} DÍAS`;
+                countdownDetail.textContent = '';
+            }}
+        }}
+        
+        // Actualizar cada segundo
+        setInterval(actualizarCuentaRegresiva, 1000);
+        // Ejecutar inmediatamente
+        actualizarCuentaRegresiva();
+    </script>
 """
     
     # Función para normalizar categorías (quitar códigos numéricos)
