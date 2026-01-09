@@ -139,11 +139,11 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         .logo-container {
             width: 100px;
             height: 100px;
-            background: white;
+            background: transparent;
             border-radius: 50%;
             margin: 0 auto 15px;
             padding: 5px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: none;
             display: flex;
             align-items: center;
             justify-content: center;
