@@ -146,8 +146,8 @@ class ScraperBaloncesto:
                     if clave not in jornadas_unicas:
                         jornadas_unicas[clave] = j
             
-            # Convertir de vuelta a lista y tomar las 3 más recientes
-            jornadas_a_procesar = list(jornadas_unicas.values())[:3]
+            # Convertir de vuelta a lista y tomar las 5 más recientes (para cubrir 2 DEFINITIVAS + PROVISIONALES)
+            jornadas_a_procesar = list(jornadas_unicas.values())[:5]
             
             if not jornadas_a_procesar:
                 logger.error("No se encontraron jornadas definitivas ni provisionales")
