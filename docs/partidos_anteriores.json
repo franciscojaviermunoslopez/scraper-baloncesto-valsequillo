@@ -1,25 +1,5 @@
 [
   {
-    "dia": "Viernes 23/01/26",
-    "hora": "00:00",
-    "categoria": "Cad Masc S-B",
-    "local": "Clínica Dental Virmident Valsequillo  (35008840)",
-    "visitante": "SBT Maspalomas (35022914)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Domingo 25/01/26",
-    "hora": "00:00",
-    "categoria": "Sen Masc 2ª F G-B",
-    "local": "CB Telde** (35002857)",
-    "visitante": "Vito Valsequillo (35008831)",
-    "lugar": "Pab Rita Hdez",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
     "dia": "Miércoles 14/01/26",
     "hora": "20:30",
     "categoria": "81270  Sen Masc 2ª F G-B",
@@ -48,6 +28,26 @@
     "lugar": "Pab Pedro Padilla",
     "origen": "Página 1",
     "jornada_tipo": "DEFINITIVA"
+  },
+  {
+    "dia": "Viernes 23/01/26",
+    "hora": "00:00",
+    "categoria": "Cad Masc S-B",
+    "local": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "visitante": "SBT Maspalomas (35022914)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Domingo 25/01/26",
+    "hora": "00:00",
+    "categoria": "Sen Masc 2ª F G-B",
+    "local": "CB Telde** (35002857)",
+    "visitante": "Vito Valsequillo (35008831)",
+    "lugar": "Pab Rita Hdez",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
   },
   {
     "dia": "Viernes 09/01/26",
