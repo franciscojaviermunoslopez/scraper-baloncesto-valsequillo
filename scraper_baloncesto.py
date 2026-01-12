@@ -1154,7 +1154,7 @@ class ScraperBaloncesto:
             # Guardar a archivo
             preview_path = Path("email_preview.html")
             preview_path.write_text(html, encoding='utf-8')
-            logger.info(f"Preview de email generado: {preview_path}")
+            logger.info(f"Preview de email generado: {preview_path.absolute()}")
             
             return preview_path
             
