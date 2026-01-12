@@ -419,77 +419,6 @@
         .card.hidden {
             display: none;
         }
-        
-        /* BARRA COUNTDOWN ÉPICA */
-        .countdown-bar {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 2px solid rgba(255,255,255,0.1);
-        }
-        
-        .countdown-bar-title {
-            text-align: center;
-            color: white;
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        
-        .countdown-boxes {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .countdown-box {
-            background: rgba(255,255,255,0.95);
-            border-radius: 12px;
-            padding: 15px 20px;
-            min-width: 90px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transform: translateY(0);
-            transition: transform 0.3s ease;
-        }
-        
-        .countdown-box:hover {
-            transform: translateY(-5px);
-        }
-        
-        .countdown-number {
-            font-size: 2.5em;
-            font-weight: 800;
-            color: var(--primary);
-            line-height: 1;
-            display: block;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .countdown-label {
-            font-size: 0.75em;
-            color: #666;
-            text-transform: uppercase;
-            font-weight: 600;
-            margin-top: 8px;
-            letter-spacing: 1px;
-        }
-        
-        @media (max-width: 768px) {
-            .countdown-box {
-                min-width: 70px;
-                padding: 12px 15px;
-            }
-            
-            .countdown-number {
-                font-size: 2em;
-            }
-        }
     </style>
 </head>
 <body>
@@ -566,78 +495,6 @@
             </div>
         </div>
     </div>
-    
-    <div class="container">
-        <div class="countdown-bar" data-match-time="2026-01-14T20:30:00">
-            <div class="countdown-bar-title">⏰ PRÓXIMO PARTIDO EN:</div>
-            <div class="countdown-boxes">
-                <div class="countdown-box">
-                    <span class="countdown-number" id="days-count">0</span>
-                    <span class="countdown-label">Días</span>
-                </div>
-                <div class="countdown-box">
-                    <span class="countdown-number" id="hours-count">0</span>
-                    <span class="countdown-label">Horas</span>
-                </div>
-                <div class="countdown-box">
-                    <span class="countdown-number" id="minutes-count">0</span>
-                    <span class="countdown-label">Minutos</span>
-                </div>
-                <div class="countdown-box">
-                    <span class="countdown-number" id="seconds-count">0</span>
-                    <span class="countdown-label">Segundos</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        // Cuenta regresiva en tiempo real
-        function actualizarCuentaRegresiva() {
-            const banner = document.querySelector('.countdown-bar');
-            if (!banner) return;
-            
-            const matchTime = banner.getAttribute('data-match-time');
-            if (!matchTime) return;
-            
-            const ahora = new Date();
-            const fechaPartido = new Date(matchTime);
-            const diferencia = fechaPartido - ahora;
-            
-            const daysEl = document.getElementById('days-count');
-            const hoursEl = document.getElementById('hours-count');
-            const minutesEl = document.getElementById('minutes-count');
-            const secondsEl = document.getElementById('seconds-count');
-            const titleEl = document.querySelector('.countdown-bar-title');
-            
-            if (diferencia < 0) {
-                // El partido ya empezó
-                titleEl.textContent = '🔴 PARTIDO EN VIVO';
-                daysEl.textContent = '0';
-                hoursEl.textContent = '0';
-                minutesEl.textContent = '0';
-                secondsEl.textContent = '0';
-                return;
-            }
-            
-            // Calcular tiempo restante
-            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-            const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-            const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
-            
-            // Actualizar números con animación
-            daysEl.textContent = dias;
-            hoursEl.textContent = horas.toString().padStart(2, '0');
-            minutesEl.textContent = minutos.toString().padStart(2, '0');
-            secondsEl.textContent = segundos.toString().padStart(2, '0');
-        }
-        
-        // Actualizar cada segundo
-        setInterval(actualizarCuentaRegresiva, 1000);
-        // Ejecutar inmediatamente
-        actualizarCuentaRegresiva();
-    </script>
 
     <div class="container">
         <div class="filter-section">
@@ -656,81 +513,6 @@
     <div class="container">
         <div class="grid">
 
-            <div class="card casa valsequillo-destacado" data-category="Junior Masc S-B" data-type="DEFINITIVA">
-                <div class="card-badge badge-casa">🏠 EN CASA</div>
-                
-                <div class="date-row">
-                    <span style="font-size: 1.2em;">📅</span>
-                    <div>
-                        <div style="color: var(--text-dark);">Viernes 09/01/26</div>
-                        <div style="color: var(--primary);">18:30</div>
-                    </div>
-                </div>
-                
-                <div class="matchup">
-                    <div class="team team-highlight">Valsequillo</div>
-                    <div class="vs">VS</div>
-                    <div class="team ">CB Telde (35002857)</div>
-                </div>
-                
-                <div class="meta-info">
-                    <span class="category-tag">78270  Junior Masc S-B</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=IES+Valsequillo" target="_blank" class="location-link">
-                        📍 IES Valsequillo
-                    </a>
-                </div>
-            </div>
-            
-            <div class="card fuera valsequillo-destacado" data-category="Sen Masc 2ª F G-B" data-type="DEFINITIVA">
-                <div class="card-badge badge-fuera">✈️ VISITANTE</div>
-                
-                <div class="date-row">
-                    <span style="font-size: 1.2em;">📅</span>
-                    <div>
-                        <div style="color: var(--text-dark);">Sábado 10/01/26</div>
-                        <div style="color: var(--primary);">19:00</div>
-                    </div>
-                </div>
-                
-                <div class="matchup">
-                    <div class="team ">CB Goleta (35005031)</div>
-                    <div class="vs">VS</div>
-                    <div class="team team-highlight">Vito Valsequillo (35008831)</div>
-                </div>
-                
-                <div class="meta-info">
-                    <span class="category-tag">81262  Sen Masc 2ª F G-B</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Pol+Mpal+La+Goleta" target="_blank" class="location-link">
-                        📍 Pol Mpal La Goleta
-                    </a>
-                </div>
-            </div>
-            
-            <div class="card fuera valsequillo-destacado" data-category="Cad Masc S-B" data-type="DEFINITIVA">
-                <div class="card-badge badge-fuera">✈️ VISITANTE</div>
-                
-                <div class="date-row">
-                    <span style="font-size: 1.2em;">📅</span>
-                    <div>
-                        <div style="color: var(--text-dark);">Domingo 11/01/26</div>
-                        <div style="color: var(--primary);">17:00</div>
-                    </div>
-                </div>
-                
-                <div class="matchup">
-                    <div class="team ">Aqualia Ingenio & (35002643)</div>
-                    <div class="vs">VS</div>
-                    <div class="team team-highlight">Clínica Dental Virmident Valsequillo</div>
-                </div>
-                
-                <div class="meta-info">
-                    <span class="category-tag">77878  Cad Masc S-B</span>
-                    <a href="https://www.google.com/maps/search/?api=1&query=Pab+Pedro+Padilla" target="_blank" class="location-link">
-                        📍 Pab Pedro Padilla
-                    </a>
-                </div>
-            </div>
-            
             <div class="card casa valsequillo-destacado" data-category="Sen Masc 2ª F G-B" data-type="DEFINITIVA">
                 <div class="card-badge badge-casa">🏠 EN CASA</div>
                 
@@ -860,7 +642,7 @@
     </div>
 
     <footer>
-        <p>Actualizado automáticamente: 12/01/2026 08:26</p>
+        <p>Actualizado automáticamente: 12/01/2026 12:17</p>
         <p style="font-size: 0.8em; margin-top: 10px;">
             <a href="https://calendar.google.com/calendar/u/0?cid=8976b0fd29f0b7a34ccb24da504eba0b3057084f4c776a0d37ba06a72e4140f4@group.calendar.google.com" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">
                 📅 Suscribirse al Calendario Oficial
