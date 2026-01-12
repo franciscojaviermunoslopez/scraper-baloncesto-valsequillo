@@ -1053,8 +1053,14 @@ class ScraperBaloncesto:
                 return partidos_vigentes
             
             # Filtrar ambas listas
+            logger.info(f"📧 EMAIL: Partidos definitivos ANTES de filtrar: {len(partidos_definitivos)}")
+            logger.info(f"📧 EMAIL: Partidos provisionales ANTES de filtrar: {len(partidos_provisionales)}")
+            
             partidos_definitivos = filtrar_partidos_vigentes(partidos_definitivos)
             partidos_provisionales = filtrar_partidos_vigentes(partidos_provisionales)
+            
+            logger.info(f"📧 EMAIL: Partidos definitivos DESPUÉS de filtrar: {len(partidos_definitivos)}")
+            logger.info(f"📧 EMAIL: Partidos provisionales DESPUÉS de filtrar: {len(partidos_provisionales)}")
             
             html = """
             <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
