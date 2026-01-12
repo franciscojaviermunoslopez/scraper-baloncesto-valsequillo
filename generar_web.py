@@ -69,6 +69,39 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
     
     todos_partidos.sort(key=parsear_fecha)
     
+    # Filtrar partidos que ya terminaron (más de 2 horas después del inicio)
+    from datetime import datetime, timedelta
+    import re
+    
+    partidos_vigentes = []
+    ahora = datetime.now()
+    
+    for p in todos_partidos:
+        try:
+            # Parsear fecha y hora del partido
+            match_fecha = re.search(r'(\d{2})/(\d{2})/(\d{2})', p.get('dia', ''))
+            match_hora = re.search(r'(\d{1,2}):(\d{2})', p.get('hora', ''))
+            
+            if match_fecha and match_hora:
+                dia, mes, anio = match_fecha.groups()
+                hora, minuto = match_hora.groups()
+                
+                fecha_partido = datetime(2000 + int(anio), int(mes), int(dia), int(hora), int(minuto))
+                # Añadir 2 horas buffer (un partido dura ~1.5-2h)
+                fecha_fin_estimada = fecha_partido + timedelta(hours=2)
+                
+                # Solo mostrar si no ha terminado
+                if ahora < fecha_fin_estimada:
+                    partidos_vigentes.append(p)
+            else:
+                # Si no se puede parsear, incluirlo por seguridad
+                partidos_vigentes.append(p)
+        except:
+            # Si hay error, incluir el partido
+            partidos_vigentes.append(p)
+    
+    todos_partidos = partidos_vigentes
+    
     # 2. Generar HTML con diseño mejorado
     html = """<!DOCTYPE html>
 <html lang="es">
@@ -491,77 +524,6 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         .card.hidden {
             display: none;
         }
-        
-        /* BARRA COUNTDOWN ÉPICA */
-        .countdown-bar {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 2px solid rgba(255,255,255,0.1);
-        }
-        
-        .countdown-bar-title {
-            text-align: center;
-            color: white;
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        
-        .countdown-boxes {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .countdown-box {
-            background: rgba(255,255,255,0.95);
-            border-radius: 12px;
-            padding: 15px 20px;
-            min-width: 90px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transform: translateY(0);
-            transition: transform 0.3s ease;
-        }
-        
-        .countdown-box:hover {
-            transform: translateY(-5px);
-        }
-        
-        .countdown-number {
-            font-size: 2.5em;
-            font-weight: 800;
-            color: var(--primary);
-            line-height: 1;
-            display: block;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .countdown-label {
-            font-size: 0.75em;
-            color: #666;
-            text-transform: uppercase;
-            font-weight: 600;
-            margin-top: 8px;
-            letter-spacing: 1px;
-        }
-        
-        @media (max-width: 768px) {
-            .countdown-box {
-                min-width: 70px;
-                padding: 12px 15px;
-            }
-            
-            .countdown-number {
-                font-size: 2em;
-            }
-        }
     </style>
 </head>
 <body>
@@ -672,23 +634,6 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         else:
             texto_dias = f"EN {dias_restantes} DÍAS"
             emoji = "⏰"
-        # Generar data attributes para JavaScript (fecha y hora del partido)
-        # Convertir "Viernes 09/01/26" "18:30" a timestamp
-        import re
-        from datetime import datetime
-        
-        match_fecha = re.search(r'(\d{2})/(\d{2})/(\d{2})', p['dia'])
-        if match_fecha:
-            dia, mes, anio = match_fecha.groups()
-            hora_match = re.search(r'(\d{1,2}):(\d{2})', p['hora'])
-            if hora_match:
-                hora, minuto = hora_match.groups()
-                # Crear timestamp en formato ISO
-                fecha_partido = f"2026-{mes}-{dia}T{hora.zfill(2)}:{minuto}:00"
-            else:
-                fecha_partido = f"2026-{mes}-{dia}T00:00:00"
-        else:
-            fecha_partido = ""
         
         html += f"""
     <div class="container">
@@ -711,78 +656,6 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             </div>
         </div>
     </div>
-    
-    <div class="container">
-        <div class="countdown-bar" data-match-time="{fecha_partido}">
-            <div class="countdown-bar-title">⏰ PRÓXIMO PARTIDO EN:</div>
-            <div class="countdown-boxes">
-                <div class="countdown-box">
-                    <span class="countdown-number" id="days-count">0</span>
-                    <span class="countdown-label">Días</span>
-                </div>
-                <div class="countdown-box">
-                    <span class="countdown-number" id="hours-count">0</span>
-                    <span class="countdown-label">Horas</span>
-                </div>
-                <div class="countdown-box">
-                    <span class="countdown-number" id="minutes-count">0</span>
-                    <span class="countdown-label">Minutos</span>
-                </div>
-                <div class="countdown-box">
-                    <span class="countdown-number" id="seconds-count">0</span>
-                    <span class="countdown-label">Segundos</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        // Cuenta regresiva en tiempo real
-        function actualizarCuentaRegresiva() {{
-            const banner = document.querySelector('.countdown-bar');
-            if (!banner) return;
-            
-            const matchTime = banner.getAttribute('data-match-time');
-            if (!matchTime) return;
-            
-            const ahora = new Date();
-            const fechaPartido = new Date(matchTime);
-            const diferencia = fechaPartido - ahora;
-            
-            const daysEl = document.getElementById('days-count');
-            const hoursEl = document.getElementById('hours-count');
-            const minutesEl = document.getElementById('minutes-count');
-            const secondsEl = document.getElementById('seconds-count');
-            const titleEl = document.querySelector('.countdown-bar-title');
-            
-            if (diferencia < 0) {{
-                // El partido ya empezó
-                titleEl.textContent = '🔴 PARTIDO EN VIVO';
-                daysEl.textContent = '0';
-                hoursEl.textContent = '0';
-                minutesEl.textContent = '0';
-                secondsEl.textContent = '0';
-                return;
-            }}
-            
-            // Calcular tiempo restante
-            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-            const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-            const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
-            
-            // Actualizar números con animación
-            daysEl.textContent = dias;
-            hoursEl.textContent = horas.toString().padStart(2, '0');
-            minutesEl.textContent = minutos.toString().padStart(2, '0');
-            secondsEl.textContent = segundos.toString().padStart(2, '0');
-        }}
-        
-        // Actualizar cada segundo
-        setInterval(actualizarCuentaRegresiva, 1000);
-        // Ejecutar inmediatamente
-        actualizarCuentaRegresiva();
-    </script>
 """
     
     # Función para normalizar categorías (quitar códigos numéricos)
