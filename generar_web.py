@@ -227,35 +227,27 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border-top: 5px solid transparent;
             position: relative;
-            overflow: visible; /* Cambiado para que tooltip se vea */
+            overflow: visible;
             
-            /* Animación al cargar */
+            /* Estado inicial: invisible y desplazada */
             opacity: 0;
-            animation: fadeInUp 0.6s ease forwards;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
         }
         
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Cuando la tarjeta es visible (añadido por JavaScript) */
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
-        
-        /* Delay escalonado para cada tarjeta */
-        .card:nth-child(1) { animation-delay: 0.1s; }
-        .card:nth-child(2) { animation-delay: 0.2s; }
-        .card:nth-child(3) { animation-delay: 0.3s; }
-        .card:nth-child(4) { animation-delay: 0.4s; }
-        .card:nth-child(5) { animation-delay: 0.5s; }
-        .card:nth-child(6) { animation-delay: 0.6s; }
         
         .card:hover {
             transform: translateY(-8px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .card.visible:hover {
+            transform: translateY(-8px);
         }
         
         /* DESTACAR PARTIDOS DE VALSEQUILLO */
@@ -263,7 +255,10 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
             border-top-width: 7px;
             box-shadow: 0 10px 30px rgba(45, 139, 60, 0.3), 
                         0 0 0 3px rgba(45, 139, 60, 0.1);
-            animation: fadeInUp 0.6s ease forwards, pulseGlow 3s ease-in-out infinite;
+        }
+        
+        .card.valsequillo-destacado.visible {
+            animation: pulseGlow 3s ease-in-out infinite;
         }
         
         @keyframes pulseGlow {
@@ -576,6 +571,27 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
                         }
                     });
                 });
+            });
+            
+            // Animación al scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        // Opcional: dejar de observar después de animar
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            // Observar todas las tarjetas
+            document.querySelectorAll('.card').forEach(card => {
+                observer.observe(card);
             });
         });
     </script>

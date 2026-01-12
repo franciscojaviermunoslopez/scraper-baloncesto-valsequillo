@@ -1017,6 +1017,45 @@ class ScraperBaloncesto:
         Genera un preview HTML de los partidos para incluir en el email
         """
         try:
+            # Filtrar partidos que ya terminaron (más de 2 horas después del inicio)
+            from datetime import datetime, timedelta
+            import re
+            
+            def filtrar_partidos_vigentes(partidos):
+                """Filtra solo partidos que no hayan terminado"""
+                partidos_vigentes = []
+                ahora = datetime.now()
+                
+                for p in partidos:
+                    try:
+                        # Parsear fecha y hora del partido
+                        match_fecha = re.search(r'(\d{2})/(\d{2})/(\d{2})', p.get('dia', ''))
+                        match_hora = re.search(r'(\d{1,2}):(\d{2})', p.get('hora', ''))
+                        
+                        if match_fecha and match_hora:
+                            dia, mes, anio = match_fecha.groups()
+                            hora, minuto = match_hora.groups()
+                            
+                            fecha_partido = datetime(2000 + int(anio), int(mes), int(dia), int(hora), int(minuto))
+                            # Añadir 2 horas buffer (un partido dura ~1.5-2h)
+                            fecha_fin_estimada = fecha_partido + timedelta(hours=2)
+                            
+                            # Solo incluir si no ha terminado
+                            if ahora < fecha_fin_estimada:
+                                partidos_vigentes.append(p)
+                        else:
+                            # Si no se puede parsear, incluirlo por seguridad
+                            partidos_vigentes.append(p)
+                    except:
+                        # Si hay error, incluir el partido
+                        partidos_vigentes.append(p)
+                
+                return partidos_vigentes
+            
+            # Filtrar ambas listas
+            partidos_definitivos = filtrar_partidos_vigentes(partidos_definitivos)
+            partidos_provisionales = filtrar_partidos_vigentes(partidos_provisionales)
+            
             html = """
             <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
                 <h2 style="color: #2D8B3C; border-bottom: 3px solid #2D8B3C; padding-bottom: 10px;">
