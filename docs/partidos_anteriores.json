@@ -1,0 +1,52 @@
+[
+  {
+    "dia": "Viernes",
+    "hora": "00:00",
+    "categoria": "Infantil Masc S-B",
+    "local": "Clínica Dental Virmident Valsequillo MXT (35008838)",
+    "visitante": "Aqualia Ingenio & (35002659)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Viernes",
+    "hora": "00:00",
+    "categoria": "Junior Masc S-B",
+    "local": "Valsequillo (35008832)",
+    "visitante": "Joyería Oliver del Pino BSB (350222525)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Viernes",
+    "hora": "00:00",
+    "categoria": "Sen Masc 2ª F G-B",
+    "local": "Vito Valsequillo (35008831)",
+    "visitante": "CB Las Palmas Salsas Diamante (35003164)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Martes 20/01/26",
+    "hora": "20:45",
+    "categoria": "81272  Sen Masc 2ª F G-B",
+    "local": "CB Telde** (35002857)",
+    "visitante": "Vito Valsequillo (35008831)",
+    "lugar": "IES Profesor Pulido Castro",
+    "origen": "Página 1",
+    "jornada_tipo": "DEFINITIVA"
+  },
+  {
+    "dia": "Viernes 23/01/26",
+    "hora": "18:30",
+    "categoria": "77883  Cad Masc S-B",
+    "local": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "visitante": "SBT Maspalomas (35022914)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "DEFINITIVA"
+  }
+]
