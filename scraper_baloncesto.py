@@ -1302,14 +1302,30 @@ class ScraperBaloncesto:
             logger.info(f"Eventos existentes encontrados: {len(existing_events)}")
             
             # 2. Crear diccionario de eventos existentes por partido_id
+            # Y eliminar eventos legacy (sin partido_id)
             eventos_por_id = {}
+            eventos_legacy_eliminados = 0
+            
             for event in existing_events:
                 extended_props = event.get('extendedProperties', {}).get('private', {})
                 partido_id = extended_props.get('partido_id')
                 
                 if partido_id:
+                    # Evento con el nuevo sistema, guardarlo
                     eventos_por_id[partido_id] = event
                     logger.debug(f"Evento existente con ID {partido_id}: {event.get('summary')}")
+                else:
+                    # Evento sin partido_id = evento antiguo del sistema anterior
+                    # Eliminarlo para evitar duplicados
+                    try:
+                        service.events().delete(calendarId=calendar_id, eventId=event['id']).execute()
+                        eventos_legacy_eliminados += 1
+                        logger.debug(f"Evento LEGACY eliminado (sin partido_id): {event.get('summary', 'Sin título')}")
+                    except Exception as e:
+                        logger.warning(f"No se pudo eliminar evento legacy: {e}")
+            
+            if eventos_legacy_eliminados > 0:
+                logger.info(f"🗑️  {eventos_legacy_eliminados} eventos antiguos (sin partido_id) eliminados")
             
             # 3. Generar IDs para los partidos actuales
             partidos_actuales_ids = set()
