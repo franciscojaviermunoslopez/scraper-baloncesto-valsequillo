@@ -1,5 +1,35 @@
 [
   {
+    "dia": "Miércoles",
+    "hora": "18:30",
+    "categoria": "78279  Junior Masc S-B",
+    "local": "Valsequillo (35008832)",
+    "visitante": "Joyería Oliver del Pino BSB (350222525)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Miércoles",
+    "hora": "20:30",
+    "categoria": "81277  Sen Masc 2ª F G-B",
+    "local": "Vito Valsequillo (35008831)",
+    "visitante": "CB Las Palmas Salsas Diamante (35003164)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Viernes",
+    "hora": "18:30",
+    "categoria": "81442  Infantil Masc S-B",
+    "local": "Clínica Dental Virmident Valsequillo MXT (35008838)",
+    "visitante": "Aqualia Ingenio & (35002659)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Martes 20/01/26",
     "hora": "20:45",
     "categoria": "81272  Sen Masc 2ª F G-B",
@@ -18,35 +48,5 @@
     "lugar": "IES Valsequillo",
     "origen": "Página 1",
     "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Viernes",
-    "hora": "00:00",
-    "categoria": "Infantil Masc S-B",
-    "local": "Clínica Dental Virmident Valsequillo MXT (35008838)",
-    "visitante": "Aqualia Ingenio & (35002659)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Viernes",
-    "hora": "00:00",
-    "categoria": "Junior Masc S-B",
-    "local": "Valsequillo (35008832)",
-    "visitante": "Joyería Oliver del Pino BSB (350222525)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Viernes",
-    "hora": "00:00",
-    "categoria": "Sen Masc 2ª F G-B",
-    "local": "Vito Valsequillo (35008831)",
-    "visitante": "CB Las Palmas Salsas Diamante (35003164)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
   }
 ]
