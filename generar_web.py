@@ -49,7 +49,7 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
     
     todos_partidos = list(partidos_unicos.values())
     
-    # Ordenar por fecha (más cercanos primero)
+    # Funciones de utilidad para ordenación y display
     def parsear_fecha(partido):
         """Convierte 'Viernes 09/01/26' a objeto datetime para ordenar"""
         try:
@@ -66,8 +66,13 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         except:
             from datetime import datetime
             return datetime(2099, 12, 31)
+
+    # Ordenar por: 1. Tipo (DEFINITIVA primero), 2. Fecha, 3. Hora
+    def sorting_key(p):
+        tipo_score = 0 if p.get('jornada_tipo') == 'DEFINITIVA' else 1
+        return (tipo_score, parsear_fecha(p), p.get('hora', '00:00'))
     
-    todos_partidos.sort(key=parsear_fecha)
+    todos_partidos.sort(key=sorting_key)
     
     # Filtrar partidos que ya terminaron (más de 2 horas después del inicio)
     from datetime import datetime, timedelta
@@ -768,7 +773,9 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
                 <div class="date-row">
                     <span style="font-size: 1.2em;">📅</span>
                     <div>
-                        <div style="color: var(--text-dark);">{p['dia']}</div>
+                        <div style="color: var(--text-dark);">
+                            {p['dia'] if re.search(r'\d', p['dia']) else f"{p['dia']} {parsear_fecha(p).strftime('%d/%m/%y') if parsear_fecha(p).year < 2099 else ''}"}
+                        </div>
                         <div style="color: var(--primary);">{p['hora']}</div>
                     </div>
                 </div>

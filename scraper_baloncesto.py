@@ -146,8 +146,8 @@ class ScraperBaloncesto:
                     if clave not in jornadas_unicas:
                         jornadas_unicas[clave] = j
             
-            # Convertir de vuelta a lista y tomar las 5 más recientes (para cubrir 2 DEFINITIVAS + PROVISIONALES)
-            jornadas_a_procesar = list(jornadas_unicas.values())[:5]
+            # Convertir de vuelta a lista y tomar las 10 más recientes (para cubrir más semanas)
+            jornadas_a_procesar = list(jornadas_unicas.values())[:10]
             
             if not jornadas_a_procesar:
                 logger.error("No se encontraron jornadas definitivas ni provisionales")
@@ -252,8 +252,8 @@ class ScraperBaloncesto:
                 
                 # Buscar en las primeras 20 líneas
                 for line in lines[:20]:
-                    # Patrón: (DD-DD Mes) o DD-DD Mes
-                    match_rango = re.search(r'(\d{1,2})-(\d{1,2})\s+(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)', line, re.IGNORECASE)
+                    # Patrón: (DD-DD Mes) o DD-DD Mes o DD/MM
+                    match_rango = re.search(r'(\d{1,2})[-\s]?(\d{1,2})\s+(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)', line, re.IGNORECASE)
                     if match_rango:
                         dia_inicio = int(match_rango.group(1))
                         mes_texto = match_rango.group(3).capitalize()
@@ -1432,9 +1432,41 @@ class ScraperBaloncesto:
                     continue
             
             # 4. Eliminar eventos obsoletos (que ya no están en la lista actual)
+            # EXCEPCIÓN: No borrar eventos que estén fuera del rango de fechas que hemos procesado
             eventos_eliminados = 0
+            
+            # Calcular rango de fechas procesadas
+            fechas_procesadas = []
+            for p_id in partidos_actuales_ids:
+                # Buscar el partido en la lista actual para sacar su fecha
+                for part in partidos:
+                    temp_id = hashlib.md5(f"{part['local']}|{part['visitante']}|{part['categoria']}|{part['dia']}|{part['hora']}".encode('utf-8')).hexdigest()
+                    if temp_id == p_id:
+                        res_fecha = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', part.get('dia', ''))
+                        if res_fecha:
+                            d_str, m_str, a_str = res_fecha.group(1).split('/')
+                            if len(a_str) == 2: a_str = "20" + a_str
+                            fechas_procesadas.append(datetime(int(a_str), int(m_str), int(d_str)).date())
+                        break
+            
+            fecha_max_procesada = max(fechas_procesadas) if fechas_procesadas else None
+            
             for partido_id, event in eventos_por_id.items():
                 if partido_id not in partidos_actuales_ids:
+                    # Si el evento tiene fecha y es posterior a lo que hemos procesado, NO borrar
+                    try:
+                        start_str = event['start'].get('dateTime') or event['start'].get('date')
+                        if start_str and fecha_max_procesada:
+                            # Parsear ISO format simplificado
+                            event_date_str = start_str.split('T')[0]
+                            event_date = datetime.strptime(event_date_str, "%Y-%m-%d").date()
+                            if event_date > fecha_max_procesada:
+                                logger.debug(f"Saltando eliminación de evento futuro lejano: {event.get('summary')}")
+                                continue
+                    except Exception as e:
+                        logger.debug(f"Error parseando fecha de evento para borrado: {e}")
+                        pass
+
                     try:
                         service.events().delete(calendarId=calendar_id, eventId=event['id']).execute()
                         eventos_eliminados += 1
