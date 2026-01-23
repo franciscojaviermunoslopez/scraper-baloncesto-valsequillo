@@ -774,7 +774,7 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
                     <span style="font-size: 1.2em;">📅</span>
                     <div>
                         <div style="color: var(--text-dark);">
-                            {p['dia'] if re.search(r'\d', p['dia']) else f"{p['dia']} {parsear_fecha(p).strftime('%d/%m/%y') if parsear_fecha(p).year < 2099 else ''}"}
+                            {p['dia'] if any(char.isdigit() for char in p['dia']) else f"{p['dia']} {parsear_fecha(p).strftime('%d/%m/%y') if parsear_fecha(p).year < 2099 else ''}"}
                         </div>
                         <div style="color: var(--primary);">{p['hora']}</div>
                     </div>

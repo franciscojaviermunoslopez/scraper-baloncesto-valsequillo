@@ -250,26 +250,29 @@ class ScraperBaloncesto:
                 mes_jornada = None
                 year_jornada = datetime.now().year
                 
-                # Buscar en las primeras 20 líneas
-                for line in lines[:20]:
-                    # Patrón: (DD-DD Mes) o DD-DD Mes o DD/MM
-                    match_rango = re.search(r'(\d{1,2})[-\s]?(\d{1,2})\s+(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)', line, re.IGNORECASE)
+                # Buscar en las primeras 30 líneas
+                for line in lines[:30]:
+                    # Patrón más específico para evitar falsos positivos con el número de jornada
+                    # Buscamos (26-30 Ene) o similares. \d{1,2}-\d{1,2} seguido de mes.
+                    match_rango = re.search(r'(\d{1,2})[-\s]+(\d{1,2})\s+(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)', line, re.IGNORECASE)
+                    
                     if match_rango:
                         dia_inicio = int(match_rango.group(1))
                         mes_texto = match_rango.group(3).capitalize()
-                        mes_jornada = mes_texto
                         
-                        # Convertir mes texto a número
+                        # Si el día detectado es muy bajo (ej 1 o 2) y el mes es Ene/Feb, 
+                        # podría ser un error si estamos procesando Jornada 17/18.
+                        # Pero confiamos en el primer match claro de rango.
+                        
                         meses = {'Ene': 1, 'Feb': 2, 'Mar': 3, 'Abr': 4, 'May': 5, 'Jun': 6,
                                 'Jul': 7, 'Ago': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dic': 12}
                         mes_num = meses.get(mes_texto, 1)
                         
-                        # Ajustar año si es necesario (si estamos en dic y la jornada es ene del año siguiente)
                         if datetime.now().month == 12 and mes_num == 1:
                             year_jornada = datetime.now().year + 1
                         
                         fecha_inicio_jornada = datetime(year_jornada, mes_num, dia_inicio)
-                        logger.debug(f"Fecha inicio jornada detectada: {fecha_inicio_jornada.strftime('%d/%m/%Y')}")
+                        logger.debug(f"Fecha inicio jornada detectada en línea '{line}': {fecha_inicio_jornada.strftime('%d/%m/%Y')}")
                         break
                 
                 # Detectar día de la semana en la página
@@ -284,10 +287,9 @@ class ScraperBaloncesto:
                     for d in dias_semana:
                         # Verificamos que la línea sea principalmente el día
                         if d in line and len(line) < 40:
-                            # Opción 1: Buscar fecha en la misma línea o siguientes
+                            # Opción 1: Buscar fecha DD/MM/YY o (DD/MM/YY)
                             match_fecha = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', line)
                             
-                            # 2. Si no está, buscar en las lineas SIGUIENTES (hasta 3)
                             if not match_fecha:
                                 for offset in range(1, 4):
                                     if i + offset < len(lines):
@@ -296,24 +298,25 @@ class ScraperBaloncesto:
                                         if match_fecha:
                                             break
                             
-                            # Opción 2: Si NO encontramos fecha pero SÍ tenemos fecha_inicio_jornada, calcular
-                            if not match_fecha and fecha_inicio_jornada:
+                            if match_fecha:
+                                fecha_extraida = match_fecha.group(1)
+                                # Si la fecha corta (26) se vuelve 2026, normalizar
+                                if len(fecha_extraida.split('/')[-1]) == 2:
+                                    partes = fecha_extraida.split('/')
+                                    fecha_extraida = f"{partes[0]}/{partes[1]}/20{partes[2]}"
+                                dia_actual = f"{d} {fecha_extraida}"
+                                logger.debug(f"Fecha EXTRAÍDA DIRECTAMENTE para {d}: {fecha_extraida}")
+                            elif fecha_inicio_jornada:
                                 dia_semana_num = dia_semana_a_numero.get(d)
                                 if dia_semana_num is not None:
-                                    # Calcular cuántos días hay desde fecha_inicio_jornada hasta este día
                                     dias_diferencia = (dia_semana_num - fecha_inicio_jornada.weekday()) % 7
                                     fecha_calculada = fecha_inicio_jornada + timedelta(days=dias_diferencia)
                                     dia_actual = f"{d} {fecha_calculada.strftime('%d/%m/%y')}"
-                                    logger.debug(f"Fecha CALCULADA para {d}: {fecha_calculada.strftime('%d/%m/%y')}")
+                                    logger.debug(f"Fecha CALCULADA para {d} (Ref: {fecha_inicio_jornada.strftime('%d/%m')}): {fecha_calculada.strftime('%d/%m/%y')}")
                                 else:
                                     dia_actual = d
-                                    logger.warning(f"Fecha NO detectada ni calculada para {d}")
-                            elif match_fecha:
-                                dia_actual = f"{d} {match_fecha.group(1)}" # Ej: "Viernes 16/01/26"
-                                logger.debug(f"Fecha detectada para {d}: {match_fecha.group(1)}")
                             else:
                                 dia_actual = d
-                                logger.warning(f"Fecha NO detectada para día {d} (Usando solo nombre día)")
                             break
 
                     if "valsequillo" in line.lower():
