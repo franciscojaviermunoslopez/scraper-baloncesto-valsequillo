@@ -54,7 +54,8 @@ class ScraperBaloncesto:
             'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
             'Accept-Encoding': 'gzip, deflate',
             'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1'
+            'Upgrade-Insecure-Requests': '1',
+            'Referer': self.url_jornadas
         })
         
         # Configuración SSL más permisiva para servidores con certificados antiguos
@@ -146,8 +147,9 @@ class ScraperBaloncesto:
                     if clave not in jornadas_unicas:
                         jornadas_unicas[clave] = j
             
-            # Convertir de vuelta a lista y tomar las 10 más recientes (para cubrir más semanas)
-            jornadas_a_procesar = list(jornadas_unicas.values())[:10]
+            # Tomamos las 5 más recientes (suficiente para cubrir el rango actual)
+            # Reducimos de 10 a 5 por ahora para evitar problemas de descarga/redirects constantes
+            jornadas_a_procesar = list(jornadas_unicas.values())[:5]
             
             if not jornadas_a_procesar:
                 logger.error("No se encontraron jornadas definitivas ni provisionales")
@@ -168,8 +170,15 @@ class ScraperBaloncesto:
                 
                 try:
                     # Descargar el PDF
+                    # Descargar el PDF con Referer específico
                     logger.info(f"Descargando: {jornada['titulo']}")
-                    pdf_response = self.session.get(download_link, timeout=30, verify=False)
+                    pdf_response = self.session.get(
+                        download_link, 
+                        timeout=30, 
+                        verify=False,
+                        headers={'Referer': self.url_jornadas},
+                        allow_redirects=True
+                    )
                     pdf_response.raise_for_status()
                     
                     # Guardar el PDF con número de jornada único
@@ -252,27 +261,32 @@ class ScraperBaloncesto:
                 
                 # Buscar en las primeras 30 líneas
                 for line in lines[:30]:
-                    # Patrón más específico para evitar falsos positivos con el número de jornada
-                    # Buscamos (26-30 Ene) o similares. \d{1,2}-\d{1,2} seguido de mes.
-                    match_rango = re.search(r'(\d{1,2})[-\s]+(\d{1,2})\s+(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)', line, re.IGNORECASE)
+                    # Patrón 1: (DD-DD Mes) o DD-DD Mes
+                    match_rango = re.search(r'(\d{1,2})[-\s/]+(\d{1,2})\s+(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)', line, re.IGNORECASE)
                     
-                    if match_rango:
-                        dia_inicio = int(match_rango.group(1))
-                        mes_texto = match_rango.group(3).capitalize()
-                        
-                        # Si el día detectado es muy bajo (ej 1 o 2) y el mes es Ene/Feb, 
-                        # podría ser un error si estamos procesando Jornada 17/18.
-                        # Pero confiamos en el primer match claro de rango.
-                        
-                        meses = {'Ene': 1, 'Feb': 2, 'Mar': 3, 'Abr': 4, 'May': 5, 'Jun': 6,
-                                'Jul': 7, 'Ago': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dic': 12}
+                    # Patrón 2: (DD Mes - DD Mes) -> Ejemplo: 26 Ene - 01 Feb
+                    match_rango_meses = re.search(r'(\d{1,2})\s+(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)[-\s/]+(\d{1,2})\s+(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)', line, re.IGNORECASE)
+
+                    meses = {'Ene': 1, 'Feb': 2, 'Mar': 3, 'Abr': 4, 'May': 5, 'Jun': 6,
+                            'Jul': 7, 'Ago': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dic': 12}
+
+                    if match_rango_meses:
+                        dia_inicio = int(match_rango_meses.group(1))
+                        mes_texto = match_rango_meses.group(2).capitalize()
                         mes_num = meses.get(mes_texto, 1)
-                        
                         if datetime.now().month == 12 and mes_num == 1:
                             year_jornada = datetime.now().year + 1
-                        
                         fecha_inicio_jornada = datetime(year_jornada, mes_num, dia_inicio)
-                        logger.debug(f"Fecha inicio jornada detectada en línea '{line}': {fecha_inicio_jornada.strftime('%d/%m/%Y')}")
+                        logger.debug(f"Fecha inicio detectada (Rango Meses) en '{line}': {fecha_inicio_jornada.strftime('%d/%m/%Y')}")
+                        break
+                    elif match_rango:
+                        dia_inicio = int(match_rango.group(1))
+                        mes_texto = match_rango.group(3).capitalize()
+                        mes_num = meses.get(mes_texto, 1)
+                        if datetime.now().month == 12 and mes_num == 1:
+                            year_jornada = datetime.now().year + 1
+                        fecha_inicio_jornada = datetime(year_jornada, mes_num, dia_inicio)
+                        logger.debug(f"Fecha inicio detectada (Rango Simple) en '{line}': {fecha_inicio_jornada.strftime('%d/%m/%Y')}")
                         break
                 
                 # Detectar día de la semana en la página

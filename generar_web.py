@@ -92,11 +92,11 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
                 hora, minuto = match_hora.groups()
                 
                 fecha_partido = datetime(2000 + int(anio), int(mes), int(dia), int(hora), int(minuto))
-                # Añadir 2 horas buffer (un partido dura ~1.5-2h)
-                fecha_fin_estimada = fecha_partido + timedelta(hours=2)
+                # Considerar vigentes partidos desde ayer hasta el futuro
+                # (Para no vaciar la web justo cuando termina el último de la jornada)
+                umbral_pasado = ahora - timedelta(hours=12)
                 
-                # Solo mostrar si no ha terminado
-                if ahora < fecha_fin_estimada:
+                if fecha_partido > umbral_pasado:
                     partidos_vigentes.append(p)
             else:
                 # Si no se puede parsear, incluirlo por seguridad
@@ -837,9 +837,9 @@ def generar_web_publica(partidos_definitivos=None, partidos_provisionales=None):
         print(f"✅ Logo copiado a docs/: {logo_filename}")
     
     print(f"✅ Web pública generada: {output_path}")
-    print(f"   Partidos definitivos: {len(partidos_def)}")
-    print(f"   Partidos provisionales: {len(partidos_prov)}")
-    print(f"   Total partidos mostrados: {len(todos_partidos)}")
+    print(f"   Partidos definitivos: {len(partidos_definitivos)}")
+    print(f"   Partidos provisionales: {len(partidos_provisionales)}")
+    print(f"   Total partidos en web (vigentes): {len(partidos_vigentes)}")
 
 if __name__ == "__main__":
     generar_web_publica()
