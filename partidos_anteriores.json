@@ -1,35 +1,5 @@
 [
   {
-    "dia": "Viernes 06/02/2026",
-    "hora": "00:00",
-    "categoria": "Cad Masc S-B",
-    "local": "Asigna Esbisoni MXT (35023940)",
-    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
-    "lugar": "CEIP Perseidas",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Sábado 07/02/26",
-    "hora": "00:00",
-    "categoria": "Junior Masc S-B",
-    "local": "CB Agüimes (35004736)",
-    "visitante": "Valsequillo (35008832)",
-    "lugar": "Pab Polig Arinaga",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Sábado 07/02/26",
-    "hora": "00:00",
-    "categoria": "Sen Masc 2ª F G-B",
-    "local": "Aqualia Ingenio  (35002640)",
-    "visitante": "Vito Valsequillo (35008831)",
-    "lugar": "Pab Nicolás Glez. Vega",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
     "dia": "Miércoles 28/01/26",
     "hora": "18:30",
     "categoria": "78279  Junior Masc S-B",
@@ -60,23 +30,33 @@
     "jornada_tipo": "DEFINITIVA"
   },
   {
-    "dia": "Martes 20/01/26",
-    "hora": "20:45",
-    "categoria": "81272  Sen Masc 2ª F G-B",
-    "local": "CB Telde** (35002857)",
-    "visitante": "Vito Valsequillo (35008831)",
-    "lugar": "IES Profesor Pulido Castro",
+    "dia": "Viernes 06/02/2026",
+    "hora": "00:00",
+    "categoria": "Cad Masc S-B",
+    "local": "Asigna Esbisoni MXT (35023940)",
+    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "lugar": "CEIP Perseidas",
     "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
+    "jornada_tipo": "PROVISIONAL"
   },
   {
-    "dia": "Viernes 23/01/26",
-    "hora": "18:30",
-    "categoria": "77883  Cad Masc S-B",
-    "local": "Clínica Dental Virmident Valsequillo  (35008840)",
-    "visitante": "SBT Maspalomas (35022914)",
-    "lugar": "IES Valsequillo",
+    "dia": "Sábado 07/02/26",
+    "hora": "00:00",
+    "categoria": "Junior Masc S-B",
+    "local": "CB Agüimes (35004736)",
+    "visitante": "Valsequillo (35008832)",
+    "lugar": "Pab Polig Arinaga",
     "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Sábado 07/02/26",
+    "hora": "00:00",
+    "categoria": "Sen Masc 2ª F G-B",
+    "local": "Aqualia Ingenio  (35002640)",
+    "visitante": "Vito Valsequillo (35008831)",
+    "lugar": "Pab Nicolás Glez. Vega",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
   }
 ]
