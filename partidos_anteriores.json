@@ -1,5 +1,35 @@
 [
   {
+    "dia": "Miércoles 04/02/26",
+    "hora": "18:30",
+    "categoria": "78287  Junior Masc S-B",
+    "local": "CB Agüimes (35004736)",
+    "visitante": "Valsequillo (35008832)",
+    "lugar": "Pab Polig Arinaga",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Sábado 07/02/26",
+    "hora": "20:00",
+    "categoria": "81281  Sen Masc 2ª F G-B",
+    "local": "Aqualia Ingenio  (35002640)",
+    "visitante": "Vito Valsequillo (35008831)",
+    "lugar": "Pab Nicolás Glez. Vega",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Domingo 08/02/26",
+    "hora": "12:00",
+    "categoria": "77889  Cad Masc S-B",
+    "local": "Asigna Esbisoni MXT (35023940)",
+    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "lugar": "CEIP Perseidas",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Miércoles 28/01/26",
     "hora": "18:30",
     "categoria": "78279  Junior Masc S-B",
