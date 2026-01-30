@@ -1,35 +1,5 @@
 [
   {
-    "dia": "Viernes 13/02/26",
-    "hora": "00:00",
-    "categoria": "Cad Masc S-B",
-    "local": "Clínica Dental Virmident Valsequillo  (35008840)",
-    "visitante": "CB 7 Palmas Gris (35018433)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Sábado 14/02/26",
-    "hora": "00:00",
-    "categoria": "Infantil Masc S-B",
-    "local": "Baloncesto Ohana & (35026207)",
-    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
-    "lugar": "CEIP Claudio de La Torre",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Domingo 15/02/26",
-    "hora": "00:00",
-    "categoria": "Sen Masc 2ª F G-B",
-    "local": "Vito Valsequillo (35008831)",
-    "visitante": "Santa Lucía Suresanta (35022181)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
     "dia": "Miércoles 04/02/26",
     "hora": "18:30",
     "categoria": "78287  Junior Masc S-B",
@@ -58,6 +28,36 @@
     "lugar": "CEIP Perseidas",
     "origen": "Página 1",
     "jornada_tipo": "DEFINITIVA"
+  },
+  {
+    "dia": "Viernes 13/02/26",
+    "hora": "00:00",
+    "categoria": "Cad Masc S-B",
+    "local": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "visitante": "CB 7 Palmas Gris (35018433)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Sábado 14/02/26",
+    "hora": "00:00",
+    "categoria": "Infantil Masc S-B",
+    "local": "Baloncesto Ohana & (35026207)",
+    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
+    "lugar": "CEIP Claudio de La Torre",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Domingo 15/02/26",
+    "hora": "00:00",
+    "categoria": "Sen Masc 2ª F G-B",
+    "local": "Vito Valsequillo (35008831)",
+    "visitante": "Santa Lucía Suresanta (35022181)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
   },
   {
     "dia": "Miércoles 28/01/26",
