@@ -1,6 +1,6 @@
 [
   {
-    "dia": "Viernes 13/02/26",
+    "dia": "Miércoles 11/02/26",
     "hora": "18:30",
     "categoria": "77892  Cad Masc S-B",
     "local": "Clínica Dental Virmident Valsequillo  (35008840)",
@@ -10,7 +10,7 @@
     "jornada_tipo": "PROVISIONAL"
   },
   {
-    "dia": "Viernes 13/02/26",
+    "dia": "Miércoles 11/02/26",
     "hora": "20:30",
     "categoria": "81284  Sen Masc 2ª F G-B",
     "local": "Vito Valsequillo (35008831)",
@@ -56,36 +56,6 @@
     "local": "Asigna Esbisoni MXT (35023940)",
     "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
     "lugar": "CEIP Perseidas",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Miércoles 28/01/26",
-    "hora": "18:30",
-    "categoria": "78279  Junior Masc S-B",
-    "local": "Valsequillo (35008832)",
-    "visitante": "Joyería Oliver del Pino BSB (350222525)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Miércoles 28/01/26",
-    "hora": "20:30",
-    "categoria": "81277  Sen Masc 2ª F G-B",
-    "local": "Vito Valsequillo (35008831)",
-    "visitante": "CB Las Palmas Salsas Diamante (35003164)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Viernes 30/01/26",
-    "hora": "18:30",
-    "categoria": "81442  Infantil Masc S-B",
-    "local": "Clínica Dental Virmident Valsequillo MXT (35008838)",
-    "visitante": "Aqualia Ingenio & (35002659)",
-    "lugar": "IES Valsequillo",
     "origen": "Página 1",
     "jornada_tipo": "DEFINITIVA"
   }
