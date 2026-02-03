@@ -1,6 +1,16 @@
 [
   {
     "dia": "Miércoles 11/02/26",
+    "hora": "19:45",
+    "categoria": "81444  Infantil Masc S-B",
+    "local": "Baloncesto Ohana & (35026207)",
+    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
+    "lugar": "CEIP Claudio de La Torre",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Miércoles 11/02/26",
     "hora": "18:30",
     "categoria": "77892  Cad Masc S-B",
     "local": "Clínica Dental Virmident Valsequillo  (35008840)",
@@ -16,16 +26,6 @@
     "local": "Vito Valsequillo (35008831)",
     "visitante": "Santa Lucía Suresanta (35022181)",
     "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Sábado 14/02/26",
-    "hora": "00:00",
-    "categoria": "Infantil Masc S-B",
-    "local": "Baloncesto Ohana & (35026207)",
-    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
-    "lugar": "CEIP Claudio de La Torre",
     "origen": "Página 1",
     "jornada_tipo": "PROVISIONAL"
   },
