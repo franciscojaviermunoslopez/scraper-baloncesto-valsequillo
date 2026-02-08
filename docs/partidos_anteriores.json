@@ -1,25 +1,5 @@
 [
   {
-    "dia": "Sábado 21/02/26",
-    "hora": "00:00",
-    "categoria": "Infantil Masc S-B",
-    "local": "Clínica Dental Virmident Valsequillo MXT (35008838)",
-    "visitante": "Brains Fénix (35026104)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Domingo 22/02/26",
-    "hora": "00:00",
-    "categoria": "Cad Masc S-B",
-    "local": "Brains Fénix (35026105)",
-    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
-    "lugar": "Inst Dep Pepe Armas",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
     "dia": "Miércoles 11/02/26",
     "hora": "19:45",
     "categoria": "81444  Infantil Masc S-B",
@@ -48,6 +28,26 @@
     "lugar": "IES Valsequillo",
     "origen": "Página 1",
     "jornada_tipo": "DEFINITIVA"
+  },
+  {
+    "dia": "Sábado 21/02/26",
+    "hora": "00:00",
+    "categoria": "Infantil Masc S-B",
+    "local": "Clínica Dental Virmident Valsequillo MXT (35008838)",
+    "visitante": "Brains Fénix (35026104)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Domingo 22/02/26",
+    "hora": "00:00",
+    "categoria": "Cad Masc S-B",
+    "local": "Brains Fénix (35026105)",
+    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "lugar": "Inst Dep Pepe Armas",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
   },
   {
     "dia": "Miércoles 04/02/26",
