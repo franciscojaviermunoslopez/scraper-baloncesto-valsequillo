@@ -1,5 +1,25 @@
 [
   {
+    "dia": "Viernes 20/02/2026",
+    "hora": "18:30",
+    "categoria": "81449  Infantil Masc S-B",
+    "local": "Clínica Dental Virmident Valsequillo MXT (35008838)",
+    "visitante": "Brains Fénix (35026104)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Viernes 20/02/2026",
+    "hora": "20:30",
+    "categoria": "77900  Cad Masc S-B",
+    "local": "Brains Fénix (35026105)",
+    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Miércoles 11/02/26",
     "hora": "19:45",
     "categoria": "81444  Infantil Masc S-B",
@@ -26,56 +46,6 @@
     "local": "Vito Valsequillo (35008831)",
     "visitante": "Santa Lucía Suresanta (35022181)",
     "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Sábado 21/02/26",
-    "hora": "00:00",
-    "categoria": "Infantil Masc S-B",
-    "local": "Clínica Dental Virmident Valsequillo MXT (35008838)",
-    "visitante": "Brains Fénix (35026104)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Domingo 22/02/26",
-    "hora": "00:00",
-    "categoria": "Cad Masc S-B",
-    "local": "Brains Fénix (35026105)",
-    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
-    "lugar": "Inst Dep Pepe Armas",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Miércoles 04/02/26",
-    "hora": "18:30",
-    "categoria": "78287  Junior Masc S-B",
-    "local": "CB Agüimes (35004736)",
-    "visitante": "Valsequillo (35008832)",
-    "lugar": "Pab Polig Arinaga",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Sábado 07/02/26",
-    "hora": "20:00",
-    "categoria": "81281  Sen Masc 2ª F G-B",
-    "local": "Aqualia Ingenio  (35002640)",
-    "visitante": "Vito Valsequillo (35008831)",
-    "lugar": "Pab Nicolás Glez. Vega",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Domingo 08/02/26",
-    "hora": "12:00",
-    "categoria": "77889  Cad Masc S-B",
-    "local": "Asigna Esbisoni MXT (35023940)",
-    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
-    "lugar": "CEIP Perseidas",
     "origen": "Página 1",
     "jornada_tipo": "DEFINITIVA"
   }
