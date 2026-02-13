@@ -1,5 +1,35 @@
 [
   {
+    "dia": "Sábado 07/03/26",
+    "hora": "00:00",
+    "categoria": "Infantil Masc S-B",
+    "local": "SBT Maspalomas (35022952)",
+    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
+    "lugar": "Pab Tablero",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Sábado 07/03/26",
+    "hora": "00:00",
+    "categoria": "Junior Masc S-B",
+    "local": "CB Las Palmas Minilla (35003153)",
+    "visitante": "Valsequillo (35008832)",
+    "lugar": "IES Schamann",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Domingo 08/03/26",
+    "hora": "00:00",
+    "categoria": "Sen Masc 2ª F G-B",
+    "local": "Vito Valsequillo (35008831)",
+    "visitante": "CB Goleta (35005031)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Viernes 20/02/26",
     "hora": "18:30",
     "categoria": "81449  Infantil Masc S-B",
@@ -7,7 +37,7 @@
     "visitante": "Brains Fénix (35026104)",
     "lugar": "IES Valsequillo",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Viernes 20/02/26",
@@ -17,7 +47,7 @@
     "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
     "lugar": "IES Valsequillo",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Miércoles 11/02/26",
