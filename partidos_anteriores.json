@@ -1,5 +1,15 @@
 [
   {
+    "dia": "Miércoles 04/03/26",
+    "hora": "20:30",
+    "categoria": "81290  Sen Masc 2ª F G-B",
+    "local": "Vito Valsequillo (35008831)",
+    "visitante": "CB Goleta (35005031)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Sábado 07/03/26",
     "hora": "00:00",
     "categoria": "Infantil Masc S-B",
@@ -11,21 +21,11 @@
   },
   {
     "dia": "Sábado 07/03/26",
-    "hora": "00:00",
-    "categoria": "Junior Masc S-B",
+    "hora": "18:30",
+    "categoria": "78297  Junior Masc S-B",
     "local": "CB Las Palmas Minilla (35003153)",
     "visitante": "Valsequillo (35008832)",
     "lugar": "IES Schamann",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Domingo 08/03/26",
-    "hora": "00:00",
-    "categoria": "Sen Masc 2ª F G-B",
-    "local": "Vito Valsequillo (35008831)",
-    "visitante": "CB Goleta (35005031)",
-    "lugar": "IES Valsequillo",
     "origen": "Página 1",
     "jornada_tipo": "PROVISIONAL"
   }
