@@ -1,5 +1,35 @@
 [
   {
+    "dia": "Viernes 13/03/2026",
+    "hora": "00:00",
+    "categoria": "Cad Masc S-B",
+    "local": "Cenobio Valerón Basket Guía (35019121)",
+    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "lugar": "IES Guía",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Domingo 15/03/26",
+    "hora": "00:00",
+    "categoria": "Junior Masc S-B",
+    "local": "Valsequillo (35008832)",
+    "visitante": "Brains Fénix Blanco (35026141)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Domingo 15/03/26",
+    "hora": "00:00",
+    "categoria": "Sen Masc 2ª F G-B",
+    "local": "CB Armas (35026501)",
+    "visitante": "Vito Valsequillo (35008831)",
+    "lugar": "Pab Agaete",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Miércoles 04/03/26",
     "hora": "20:30",
     "categoria": "81290  Sen Masc 2ª F G-B",
@@ -7,7 +37,7 @@
     "visitante": "CB Goleta (35005031)",
     "lugar": "IES Valsequillo",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Sábado 07/03/26",
@@ -17,7 +47,7 @@
     "visitante": "Valsequillo (35008832)",
     "lugar": "IES Schamann",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Domingo 08/03/26",
@@ -27,6 +57,6 @@
     "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
     "lugar": "Pab Tablero",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   }
 ]
