@@ -1,5 +1,25 @@
 [
   {
+    "dia": "Miércoles 18/03/2026",
+    "hora": "00:00",
+    "categoria": "Infantil Masc S-B",
+    "local": "CB Agüimes (35004724)",
+    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
+    "lugar": "Pab Polig Arinaga",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Viernes 20/03/2026",
+    "hora": "00:00",
+    "categoria": "Junior Masc S-B",
+    "local": "Cenobio Valerón Basket Guía (35019124)",
+    "visitante": "Valsequillo (35008832)",
+    "lugar": "IES Guía",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Miércoles 11/03/26",
     "hora": "18:30",
     "categoria": "78299  Junior Masc S-B",
@@ -7,7 +27,7 @@
     "visitante": "Brains Fénix Blanco (35026141)",
     "lugar": "IES Valsequillo",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Viernes 13/03/26",
@@ -17,7 +37,7 @@
     "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
     "lugar": "IES Guía",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Viernes 13/03/26",
@@ -27,7 +47,7 @@
     "visitante": "Vito Valsequillo (35008831)",
     "lugar": "Pab Agaete",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Miércoles 04/03/26",
