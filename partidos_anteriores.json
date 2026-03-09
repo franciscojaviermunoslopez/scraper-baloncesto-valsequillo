@@ -48,35 +48,5 @@
     "lugar": "IES Guía",
     "origen": "Página 1",
     "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Miércoles 04/03/26",
-    "hora": "20:30",
-    "categoria": "81290  Sen Masc 2ª F G-B",
-    "local": "Vito Valsequillo (35008831)",
-    "visitante": "CB Goleta (35005031)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Sábado 07/03/26",
-    "hora": "18:30",
-    "categoria": "78297  Junior Masc S-B",
-    "local": "CB Las Palmas Minilla (35003153)",
-    "visitante": "Valsequillo (35008832)",
-    "lugar": "IES Schamann",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Domingo 08/03/26",
-    "hora": "16:00",
-    "categoria": "81453  Infantil Masc S-B",
-    "local": "SBT Maspalomas (35022952)",
-    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
-    "lugar": "Pab Tablero",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
   }
 ]
