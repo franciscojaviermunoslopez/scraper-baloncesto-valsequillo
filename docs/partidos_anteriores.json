@@ -1,5 +1,25 @@
 [
   {
+    "dia": "Jueves 19/03/2026",
+    "hora": "18:15",
+    "categoria": "81456  Infantil Masc S-B",
+    "local": "CB Agüimes (35004724)",
+    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
+    "lugar": "Pab Polig Arinaga",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Viernes 20/03/26",
+    "hora": "00:00",
+    "categoria": "Junior Masc S-B",
+    "local": "Cenobio Valerón Basket Guía (35019124)",
+    "visitante": "Valsequillo (35008832)",
+    "lugar": "IES Guía",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Miércoles 11/03/26",
     "hora": "18:30",
     "categoria": "78299  Junior Masc S-B",
@@ -28,25 +48,5 @@
     "lugar": "IES Guía",
     "origen": "Página 1",
     "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Miércoles 18/03/2026",
-    "hora": "00:00",
-    "categoria": "Infantil Masc S-B",
-    "local": "CB Agüimes (35004724)",
-    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
-    "lugar": "Pab Polig Arinaga",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Viernes 20/03/2026",
-    "hora": "00:00",
-    "categoria": "Junior Masc S-B",
-    "local": "Cenobio Valerón Basket Guía (35019124)",
-    "visitante": "Valsequillo (35008832)",
-    "lugar": "IES Guía",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
   }
 ]
