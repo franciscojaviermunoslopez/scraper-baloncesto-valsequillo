@@ -1559,10 +1559,33 @@ class ScraperBaloncesto:
         
         # 4. Separar y generar PDFs independientes
         pdfs_generados = []
-        
+
+        # Filtrar partidos pasados (más de 2h después del inicio) antes de generar PDFs
+        def es_partido_vigente(p):
+            try:
+                match_fecha = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', p.get('dia', ''))
+                match_hora = re.search(r'(\d{1,2}):(\d{2})', p.get('hora', ''))
+                if match_fecha and match_hora:
+                    fecha_pura = match_fecha.group(1)
+                    partes = fecha_pura.split('/')
+                    if len(partes[2]) == 2:
+                        partes[2] = "20" + partes[2]
+                    d, m, a = int(partes[0]), int(partes[1]), int(partes[2])
+                    h, mi = int(match_hora.group(1)), int(match_hora.group(2))
+                    fecha_fin = datetime(a, m, d, h, mi) + timedelta(hours=2)
+                    return datetime.now() < fecha_fin
+            except Exception:
+                pass
+            return True  # si no se puede parsear, incluir por seguridad
+
+        todos_vigentes = [p for p in todos_los_partidos if es_partido_vigente(p)]
+        n_filtrados = len(todos_los_partidos) - len(todos_vigentes)
+        if n_filtrados:
+            logger.info(f"🗓️  {n_filtrados} partido(s) de jornadas pasadas excluidos del PDF")
+
         # Filtrar por tipo
-        partidos_definitivos = [p for p in todos_los_partidos if p.get('jornada_tipo') == 'DEFINITIVA']
-        partidos_provisionales = [p for p in todos_los_partidos if p.get('jornada_tipo') == 'PROVISIONAL']
+        partidos_definitivos = [p for p in todos_vigentes if p.get('jornada_tipo') == 'DEFINITIVA']
+        partidos_provisionales = [p for p in todos_vigentes if p.get('jornada_tipo') == 'PROVISIONAL']
         
         # Generar PDF Definitiva
         if partidos_definitivos:
