@@ -96,3 +96,106 @@ def formatear_mensaje(partidos: list, hay_cambios: bool) -> str:
         texto = texto[:1023] + "…"
 
     return texto
+
+
+def _detectar_cambios_en_log(ruta_log: str = "scraper.log") -> bool:
+    """Retorna True si scraper.log contiene el aviso de cambios detectados."""
+    try:
+        with open(ruta_log, encoding="utf-8") as f:
+            contenido = f.read()
+        return bool(re.search(r"⚠️.*Se detectaron.*cambios", contenido))
+    except FileNotFoundError:
+        return False
+
+
+def _buscar_pdf() -> str | None:
+    """
+    Busca el PDF más reciente en el directorio actual.
+    Prioridad: DEFINITIVA → PROVISIONAL → None.
+    """
+    for patron in [
+        "PARTIDOS_VALSEQUILLO_DEFINITIVA_*.pdf",
+        "PARTIDOS_VALSEQUILLO_PROVISIONAL_*.pdf",
+    ]:
+        archivos = sorted(glob.glob(patron))
+        if archivos:
+            return archivos[-1]
+    return None
+
+
+def _llamar_send_photo(token: str, chat_id: str, imagen_bytes: bytes, texto: str) -> bool:
+    """Intenta enviar imagen + caption. Retorna True si tuvo éxito."""
+    url = f"https://api.telegram.org/bot{token}/sendPhoto"
+    respuesta = requests.post(
+        url,
+        data={"chat_id": chat_id, "caption": texto, "parse_mode": "HTML"},
+        files={"photo": ("agenda.png", imagen_bytes, "image/png")},
+        timeout=30,
+    )
+    resultado = respuesta.json()
+    if respuesta.status_code == 200 and resultado.get("ok"):
+        logging.info("✅ Telegram: imagen enviada correctamente")
+        return True
+    logging.warning(f"⚠️ Telegram sendPhoto falló: {resultado.get('description')}")
+    return False
+
+
+def _llamar_send_message(token: str, chat_id: str, texto: str) -> bool:
+    """Envía mensaje de texto. Retorna True si tuvo éxito."""
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    respuesta = requests.post(
+        url,
+        data={"chat_id": chat_id, "text": texto, "parse_mode": "HTML"},
+        timeout=30,
+    )
+    resultado = respuesta.json()
+    if respuesta.status_code == 200 and resultado.get("ok"):
+        logging.info("✅ Telegram: mensaje de texto enviado correctamente")
+        return True
+    logging.warning(f"⚠️ Telegram sendMessage falló: {resultado.get('description')}")
+    return False
+
+
+def enviar_telegram() -> None:
+    """
+    Función principal. Lee datos de disco y variables de entorno.
+    Envía imagen+texto (o solo texto) al grupo de Telegram.
+    Nunca lanza excepciones — los errores se registran en scraper.log.
+    """
+    try:
+        token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+        chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+        if not token or not chat_id:
+            logging.error("❌ Telegram: faltan TELEGRAM_BOT_TOKEN o TELEGRAM_CHAT_ID")
+            return
+
+        # Leer partidos desde disco
+        try:
+            with open("partidos_anteriores.json", encoding="utf-8") as f:
+                partidos = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            logging.error(f"❌ Telegram: no se pudo leer partidos_anteriores.json — {e}")
+            partidos = []
+
+        hay_cambios = _detectar_cambios_en_log()
+        texto = formatear_mensaje(partidos, hay_cambios)
+
+        # Intentar enviar con imagen
+        ruta_pdf = _buscar_pdf()
+        if ruta_pdf:
+            try:
+                imagen = pdf_a_imagen(ruta_pdf)
+                if _llamar_send_photo(token, chat_id, imagen, texto):
+                    return
+            except Exception as e:
+                logging.warning(f"⚠️ Telegram: error generando imagen — {e}")
+
+        # Fallback: solo texto
+        _llamar_send_message(token, chat_id, texto)
+
+    except Exception as e:
+        logging.error(f"❌ Telegram: error inesperado — {e}")
+
+
+if __name__ == "__main__":
+    enviar_telegram()
