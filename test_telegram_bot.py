@@ -53,3 +53,87 @@ class TestPdfAImagen:
         width = struct.unpack('>I', resultado[16:20])[0]
         # A4 a 72 DPI = 595px, a 144 DPI = 1190px
         assert width > 800, f"Ancho {width}px parece demasiado pequeño para 2x"
+
+
+# Añadir al final de test_telegram_bot.py
+
+PARTIDOS_EJEMPLO = [
+    {
+        "dia": "Sábado 21/03/26",
+        "hora": "18:00",
+        "categoria": "Senior Masc S-A",
+        "local": "CB Valsequillo (35008831)",
+        "visitante": "Gran Canaria B (35004700)",
+        "lugar": "Pab Municipal Valsequillo",
+        "origen": "Página 1",
+        "jornada_tipo": "DEFINITIVA",
+    },
+    {
+        "dia": "Domingo 22/03/26",
+        "hora": "11:00",
+        "categoria": "Infantil Masc S-B",
+        "local": "Otro Club (35001111)",
+        "visitante": "Valsequillo Junior (35008838)",
+        "lugar": "IES Valsequillo",
+        "origen": "Página 1",
+        "jornada_tipo": "PROVISIONAL",
+    },
+]
+
+
+class TestFormatearMensaje:
+    def test_contiene_header(self):
+        from telegram_bot import formatear_mensaje
+        resultado = formatear_mensaje(PARTIDOS_EJEMPLO, hay_cambios=False)
+        assert "La Agenda del Finde" in resultado
+        assert "CB Valsequillo" in resultado
+
+    def test_partido_definitivo_aparece(self):
+        from telegram_bot import formatear_mensaje
+        resultado = formatear_mensaje(PARTIDOS_EJEMPLO, hay_cambios=False)
+        assert "DEFINITIVA" in resultado
+        assert "Pab Municipal Valsequillo" in resultado
+
+    def test_partido_provisional_aparece(self):
+        from telegram_bot import formatear_mensaje
+        resultado = formatear_mensaje(PARTIDOS_EJEMPLO, hay_cambios=False)
+        assert "PROVISIONAL" in resultado
+        assert "IES Valsequillo" in resultado
+
+    def test_codigos_federativos_eliminados(self):
+        """Los códigos (35XXXXXX) no deben aparecer en el mensaje."""
+        from telegram_bot import formatear_mensaje
+        resultado = formatear_mensaje(PARTIDOS_EJEMPLO, hay_cambios=False)
+        assert "(35008831)" not in resultado
+        assert "(35004700)" not in resultado
+
+    def test_sin_cambios_no_aviso(self):
+        from telegram_bot import formatear_mensaje
+        resultado = formatear_mensaje(PARTIDOS_EJEMPLO, hay_cambios=False)
+        assert "⚠️" not in resultado
+
+    def test_con_cambios_incluye_aviso(self):
+        from telegram_bot import formatear_mensaje
+        resultado = formatear_mensaje(PARTIDOS_EJEMPLO, hay_cambios=True)
+        assert "⚠️" in resultado
+        assert "cambios" in resultado.lower()
+
+    def test_sin_partidos(self):
+        from telegram_bot import formatear_mensaje
+        resultado = formatear_mensaje([], hay_cambios=False)
+        assert "No hay partidos" in resultado
+
+    def test_respeta_limite_1024_chars(self):
+        """El mensaje nunca supera 1024 caracteres (límite caption Telegram)."""
+        from telegram_bot import formatear_mensaje
+        # Generar muchos partidos para forzar truncado
+        partidos_largos = PARTIDOS_EJEMPLO * 20
+        resultado = formatear_mensaje(partidos_largos, hay_cambios=True)
+        assert len(resultado) <= 1024
+
+    def test_truncado_termina_con_puntos_suspensivos(self):
+        from telegram_bot import formatear_mensaje
+        partidos_largos = PARTIDOS_EJEMPLO * 20
+        resultado = formatear_mensaje(partidos_largos, hay_cambios=False)
+        assert len(resultado) == 1024
+        assert resultado.endswith("…")
