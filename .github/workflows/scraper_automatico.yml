@@ -131,7 +131,15 @@ jobs:
         attachments: |
           PARTIDOS_VALSEQUILLO_*.pdf
           PARTIDOS_VALSEQUILLO_*.ics
-    
+
+    - name: Enviar Telegram
+      if: steps.should_send_email.outputs.send_email == 'true'
+      continue-on-error: true
+      run: python telegram_bot.py
+      env:
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
     - name: Subir resultados como artefacto (backup)
       uses: actions/upload-artifact@v4
       if: always()
