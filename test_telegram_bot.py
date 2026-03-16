@@ -8,7 +8,9 @@ def crear_pdf_minimo():
     doc = fitz.open()
     page = doc.new_page(width=595, height=842)
     page.insert_text((50, 50), "Test PDF Valsequillo", fontsize=12)
-    return doc.tobytes()
+    pdf_bytes = doc.tobytes()
+    doc.close()
+    return pdf_bytes
 
 
 class TestPdfAImagen:

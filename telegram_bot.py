@@ -30,7 +30,10 @@ def pdf_a_imagen(ruta_pdf: str) -> bytes:
     Retorna los bytes PNG. No escribe ficheros temporales.
     """
     doc = fitz.open(ruta_pdf)
-    page = doc[0]
-    matriz = fitz.Matrix(2, 2)
-    pixmap = page.get_pixmap(matrix=matriz)
-    return pixmap.tobytes("png")
+    try:
+        page = doc[0]
+        matriz = fitz.Matrix(2, 2)
+        pixmap = page.get_pixmap(matrix=matriz)
+        return pixmap.tobytes("png")
+    finally:
+        doc.close()
