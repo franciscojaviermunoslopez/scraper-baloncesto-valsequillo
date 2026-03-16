@@ -1,0 +1,165 @@
+name: Scraper Automático de Partidos
+
+on:
+  schedule:
+    # Ejecutar cada 2 horas (para actualizar después de partidos)
+    - cron: '0 */2 * * *'
+  
+  # También permitir ejecución manual
+  workflow_dispatch:
+
+permissions:
+  contents: write  # Permitir push al repositorio
+
+jobs:
+  scrape_and_export:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout del repositorio
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+    
+    - name: Configurar Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Ejecutar scraper
+      run: |
+        python scraper_baloncesto.py
+      env:
+        GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
+        GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+    
+    - name: Verificar si hay cambios o es lunes
+      id: should_send_email
+      run: |
+        DAY_OF_WEEK=$(date +%u)  # 1=Lunes, 2=Martes, ..., 7=Domingo
+        
+        # Verificar si se detectaron cambios en los logs
+        if grep -q "⚠️.*Se detectaron.*cambios" scraper.log 2>/dev/null; then
+          HAS_CHANGES=true
+          echo "⚠️ CAMBIOS DETECTADOS"
+        else
+          HAS_CHANGES=false
+        fi
+        
+        # LÓGICA DE ENVÍO:
+        # - LUNES: Siempre enviar (resumen semanal)
+        # - OTROS DÍAS: Solo si hay cambios
+        if [ "$DAY_OF_WEEK" = "1" ]; then
+          echo "send_email=true" >> $GITHUB_OUTPUT
+          echo "📅 Es LUNES - Email semanal completo (SIEMPRE)"
+        elif [ "$HAS_CHANGES" = "true" ]; then
+          echo "send_email=true" >> $GITHUB_OUTPUT
+          echo "⚠️ Cambios detectados - Email de alerta"
+        else
+          echo "send_email=false" >> $GITHUB_OUTPUT
+          echo "✅ Sin cambios - Calendario actualizado silenciosamente"
+        fi
+    
+    - name: Listar archivos generados
+      id: list_files
+      run: |
+        echo "Archivos generados:"
+        ls -1 PARTIDOS_VALSEQUILLO_* || echo "No se encontraron archivos"
+    
+    - name: Obtener fecha actual
+      id: date
+      run: echo "date=$(date +'%d/%m/%Y')" >> $GITHUB_OUTPUT
+    
+    - name: Listar todos los archivos generados
+      run: |
+        echo "📁 Archivos en el directorio:"
+        ls -lh PARTIDOS_VALSEQUILLO_* || echo "No se encontraron archivos"
+        echo ""
+        echo "📄 Archivos .ics específicamente:"
+        ls -lh *.ics || echo "No se encontraron archivos .ics"
+    
+    - name: Enviar email con PDF adjunto
+      if: success() && steps.should_send_email.outputs.send_email == 'true'
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        secure: true
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: '🏀 Partidos Valsequillo - ${{ steps.date.outputs.date }}'
+        to: ${{ secrets.EMAIL_TO }}
+        from: CB Valsequillo Scraper
+        html_body: |
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #2D8B3C; border-bottom: 3px solid #2D8B3C; padding-bottom: 10px;">
+              🏀 Partidos del CB Valsequillo
+            </h2>
+            <p>Hola,</p>
+            <p>Te adjuntamos los <strong>PDFs</strong> con los próximos partidos y el <strong>calendario (.ics)</strong> para añadirlos a tu móvil automáticamente.</p>
+            
+            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 0;"><strong>📎 Archivos adjuntos:</strong></p>
+              <ul style="margin: 10px 0;">
+                <li>📄 PDF Jornada Definitiva (si hay partidos)</li>
+                <li>📄 PDF Jornada Provisional (si hay partidos)</li>
+                <li>📅 Calendario .ics con <strong>recordatorios automáticos</strong></li>
+              </ul>
+            </div>
+            
+            <div style="background-color: #e8f5e9; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <p style="margin: 0; color: #2D8B3C;"><strong>⏰ Recordatorios incluidos en el calendario:</strong></p>
+              <ul style="margin: 10px 0;">
+                <li>📢 1 día antes del partido</li>
+                <li>🔔 2 horas antes del partido</li>
+              </ul>
+              <p style="margin: 5px 0; font-size: 14px;">Descarga el archivo .ics y ábrelo en tu móvil para añadir todos los partidos automáticamente.</p>
+            </div>
+            
+            <p style="color: #666; font-size: 12px; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 10px;">
+              <strong>Club de Baloncesto Valsequillo - Roque Grande</strong><br>
+              Este email se envía automáticamente cada lunes.<br>
+              Generado: ${{ github.event.repository.updated_at }}
+            </p>
+          </div>
+        attachments: |
+          PARTIDOS_VALSEQUILLO_*.pdf
+          PARTIDOS_VALSEQUILLO_*.ics
+    
+    - name: Subir resultados como artefacto (backup)
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: partidos-valsequillo-${{ github.run_number }}
+        path: |
+          PARTIDOS_*.pdf
+          partidos_*.xlsx
+          jornada_*.pdf
+        retention-days: 30
+    
+    - name: Commit y push de snapshot (para detectar cambios futuros)
+      if: success()
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add partidos_anteriores.json
+        git diff --quiet && git diff --staged --quiet || (git commit -m "📊 Actualizar snapshot - $(date +'%Y-%m-%d')" && git push) || true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Commit y push de web pública (SIEMPRE)
+      if: success()
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git pull --rebase || true
+        git add -A docs/
+        git diff --quiet && git diff --staged --quiet || (git commit -m "🌐 Actualizar web pública - $(date +'%Y-%m-%d')" && git push) || true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
