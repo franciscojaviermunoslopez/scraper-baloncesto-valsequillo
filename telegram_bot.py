@@ -11,6 +11,7 @@ import logging
 import os
 import re
 import sys
+from datetime import datetime, timedelta
 
 import fitz  # PyMuPDF
 import requests
@@ -98,6 +99,24 @@ def formatear_mensaje(partidos: list, hay_cambios: bool) -> str:
     return texto
 
 
+def _es_partido_vigente(p: dict) -> bool:
+    """Filtra partidos pasados (más de 2h después del inicio). Igual que en el scraper."""
+    try:
+        match_fecha = re.search(r'(\d{1,2}/\d{1,2}/\d{2,4})', p.get('dia', ''))
+        match_hora = re.search(r'(\d{1,2}):(\d{2})', p.get('hora', ''))
+        if match_fecha and match_hora:
+            partes = match_fecha.group(1).split('/')
+            if len(partes[2]) == 2:
+                partes[2] = "20" + partes[2]
+            d, m, a = int(partes[0]), int(partes[1]), int(partes[2])
+            h, mi = int(match_hora.group(1)), int(match_hora.group(2))
+            fecha_fin = datetime(a, m, d, h, mi) + timedelta(hours=2)
+            return datetime.now() < fecha_fin
+    except Exception:
+        pass
+    return True
+
+
 def _detectar_cambios_en_log(ruta_log: str = "scraper.log") -> bool:
     """Retorna True si scraper.log contiene el aviso de cambios detectados."""
     try:
@@ -177,6 +196,7 @@ def enviar_telegram() -> None:
             logging.error(f"❌ Telegram: no se pudo leer partidos_anteriores.json — {e}")
             partidos = []
 
+        partidos = [p for p in partidos if _es_partido_vigente(p)]
         hay_cambios = _detectar_cambios_en_log()
         texto = formatear_mensaje(partidos, hay_cambios)
 
