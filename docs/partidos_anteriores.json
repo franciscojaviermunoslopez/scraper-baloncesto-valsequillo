@@ -7,7 +7,7 @@
     "visitante": "CD Loyola MXT (35008384)",
     "lugar": "IES Valsequillo",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Miércoles 25/03/26",
@@ -17,7 +17,7 @@
     "visitante": "CD Loyola MXT (35008381)",
     "lugar": "IES Valsequillo",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Jueves 26/03/26",
@@ -27,7 +27,7 @@
     "visitante": "Vito Valsequillo (35008831)",
     "lugar": "CEIP Perseidas",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Viernes 27/03/2026",
@@ -36,26 +36,6 @@
     "local": "Clínica Dental Virmident Valsequillo  (35008840)",
     "visitante": "Ecoener CB Castillo & (35003808)",
     "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Jueves 19/03/26",
-    "hora": "18:15",
-    "categoria": "81456  Infantil Masc S-B",
-    "local": "CB Agüimes (35004724)",
-    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
-    "lugar": "Pab Polig Arinaga",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Viernes 20/03/26",
-    "hora": "20:00",
-    "categoria": "78306  Junior Masc S-B",
-    "local": "Cenobio Valerón Basket Guía (35019124)",
-    "visitante": "Valsequillo (35008832)",
-    "lugar": "IES Guía",
     "origen": "Página 1",
     "jornada_tipo": "DEFINITIVA"
   }
