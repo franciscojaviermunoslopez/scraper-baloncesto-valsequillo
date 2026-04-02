@@ -1,5 +1,55 @@
 [
   {
+    "dia": "Martes 14/04/26",
+    "hora": "00:00",
+    "categoria": "Junior Masc S-B",
+    "local": "Cenobio Valerón Basket Guía (35019124)",
+    "visitante": "Valsequillo (35008832)",
+    "lugar": "IES Guía",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Viernes 17/04/26",
+    "hora": "00:00",
+    "categoria": "Cad Masc S-B",
+    "local": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "visitante": "Aqualia Ingenio & (35002643)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Sábado 18/04/26",
+    "hora": "00:00",
+    "categoria": "Sen Masc 2ª F G-B",
+    "local": "CB Las Palmas Salsas Diamante (35003164)",
+    "visitante": "Vito Valsequillo (35008831)",
+    "lugar": "IES Schamann",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Domingo 19/04/26",
+    "hora": "00:00",
+    "categoria": "Infantil Masc S-B",
+    "local": "Aqualia Ingenio & (35002659)",
+    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
+    "lugar": "Pab Nicolás Glez. Vega",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
+    "dia": "Domingo 19/04/26",
+    "hora": "00:00",
+    "categoria": "Junior Masc S-B",
+    "local": "Valsequillo (35008832)",
+    "visitante": "Aqualia Ingenio (35002661)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Martes 07/04/26",
     "hora": "18:15",
     "categoria": "81456  Infantil Masc S-B",
@@ -7,7 +57,7 @@
     "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
     "lugar": "Pab Polig Arinaga",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Miércoles 08/04/26",
@@ -17,7 +67,7 @@
     "visitante": "CB Telde** (35002857)",
     "lugar": "IES Valsequillo",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Viernes 10/04/26",
@@ -27,7 +77,7 @@
     "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
     "lugar": "CEIP Claudio de La Torre",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Sábado 11/04/26",
@@ -37,6 +87,6 @@
     "visitante": "Valsequillo (35008832)",
     "lugar": "Pab Rita Hdez",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   }
 ]
