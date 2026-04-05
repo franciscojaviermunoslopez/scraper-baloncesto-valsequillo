@@ -1,5 +1,45 @@
 [
   {
+    "dia": "Martes 07/04/26",
+    "hora": "18:15",
+    "categoria": "81456  Infantil Masc S-B",
+    "local": "CB Agüimes (35004724)",
+    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
+    "lugar": "Pab Polig Arinaga",
+    "origen": "Página 1",
+    "jornada_tipo": "DEFINITIVA"
+  },
+  {
+    "dia": "Miércoles 08/04/26",
+    "hora": "20:30",
+    "categoria": "81300  Sen Masc 2ª F G-B",
+    "local": "Vito Valsequillo (35008831)",
+    "visitante": "CB Telde** (35002857)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "DEFINITIVA"
+  },
+  {
+    "dia": "Sábado 11/04/26",
+    "hora": "19:45",
+    "categoria": "78315  Junior Masc S-B",
+    "local": "CB Telde (35002857)",
+    "visitante": "Valsequillo (35008832)",
+    "lugar": "Pab Rita Hdez",
+    "origen": "Página 1",
+    "jornada_tipo": "DEFINITIVA"
+  },
+  {
+    "dia": "Domingo 12/04/26",
+    "hora": "19:00",
+    "categoria": "77919  Cad Masc S-B",
+    "local": "Baloncesto Ohana & (35026204)",
+    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "lugar": "CEIP Claudio de La Torre",
+    "origen": "Página 1",
+    "jornada_tipo": "DEFINITIVA"
+  },
+  {
     "dia": "Martes 14/04/26",
     "hora": "00:00",
     "categoria": "Junior Masc S-B",
@@ -48,45 +88,5 @@
     "lugar": "IES Valsequillo",
     "origen": "Página 1",
     "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Martes 07/04/26",
-    "hora": "18:15",
-    "categoria": "81456  Infantil Masc S-B",
-    "local": "CB Agüimes (35004724)",
-    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
-    "lugar": "Pab Polig Arinaga",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Miércoles 08/04/26",
-    "hora": "20:30",
-    "categoria": "81300  Sen Masc 2ª F G-B",
-    "local": "Vito Valsequillo (35008831)",
-    "visitante": "CB Telde** (35002857)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Viernes 10/04/26",
-    "hora": "00:00",
-    "categoria": "Cad Masc S-B",
-    "local": "Baloncesto Ohana & (35026204)",
-    "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
-    "lugar": "CEIP Claudio de La Torre",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Sábado 11/04/26",
-    "hora": "19:45",
-    "categoria": "78315  Junior Masc S-B",
-    "local": "CB Telde (35002857)",
-    "visitante": "Valsequillo (35008832)",
-    "lugar": "Pab Rita Hdez",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
   }
 ]
