@@ -1,5 +1,55 @@
 [
   {
+    "dia": "Miércoles 15/04/26",
+    "hora": "19:00",
+    "categoria": "78306  Junior Masc S-B",
+    "local": "Cenobio Valerón Basket Guía (35019124)",
+    "visitante": "Valsequillo (35008832)",
+    "lugar": "IES Guía",
+    "origen": "Página 1",
+    "jornada_tipo": "DEFINITIVA"
+  },
+  {
+    "dia": "Viernes 17/04/26",
+    "hora": "18:15",
+    "categoria": "77923  Cad Masc S-B",
+    "local": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "visitante": "Aqualia Ingenio & (35002643)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "DEFINITIVA"
+  },
+  {
+    "dia": "Viernes 17/04/26",
+    "hora": "20:00",
+    "categoria": "78321  Junior Masc S-B",
+    "local": "Valsequillo (35008832)",
+    "visitante": "Aqualia Ingenio (35002661)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "DEFINITIVA"
+  },
+  {
+    "dia": "Sábado 18/04/26",
+    "hora": "10:00",
+    "categoria": "81470  Infantil Masc S-B",
+    "local": "Aqualia Ingenio & (35002659)",
+    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
+    "lugar": "Pab Nicolás Glez. Vega",
+    "origen": "Página 1",
+    "jornada_tipo": "DEFINITIVA"
+  },
+  {
+    "dia": "Domingo 19/04/26",
+    "hora": "18:00",
+    "categoria": "81305  Sen Masc 2ª F G-B",
+    "local": "CB Las Palmas Salsas Diamante (35003164)",
+    "visitante": "Vito Valsequillo (35008831)",
+    "lugar": "IES Schamann",
+    "origen": "Página 1",
+    "jornada_tipo": "DEFINITIVA"
+  },
+  {
     "dia": "Martes 21/04/26",
     "hora": "18:30",
     "categoria": "81462  Infantil Masc S-B",
@@ -58,55 +108,5 @@
     "lugar": "Comp Dep Mpal Sta Brígida",
     "origen": "Página 1",
     "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Miércoles 15/04/26",
-    "hora": "19:00",
-    "categoria": "78306  Junior Masc S-B",
-    "local": "Cenobio Valerón Basket Guía (35019124)",
-    "visitante": "Valsequillo (35008832)",
-    "lugar": "IES Guía",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Viernes 17/04/26",
-    "hora": "18:15",
-    "categoria": "77923  Cad Masc S-B",
-    "local": "Clínica Dental Virmident Valsequillo  (35008840)",
-    "visitante": "Aqualia Ingenio & (35002643)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Viernes 17/04/26",
-    "hora": "20:00",
-    "categoria": "78321  Junior Masc S-B",
-    "local": "Valsequillo (35008832)",
-    "visitante": "Aqualia Ingenio (35002661)",
-    "lugar": "IES Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Sábado 18/04/26",
-    "hora": "10:00",
-    "categoria": "81470  Infantil Masc S-B",
-    "local": "Aqualia Ingenio & (35002659)",
-    "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
-    "lugar": "Pab Nicolás Glez. Vega",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Domingo 19/04/26",
-    "hora": "18:00",
-    "categoria": "81305  Sen Masc 2ª F G-B",
-    "local": "CB Las Palmas Salsas Diamante (35003164)",
-    "visitante": "Vito Valsequillo (35008831)",
-    "lugar": "IES Schamann",
-    "origen": "Página 1",
-    "jornada_tipo": "DEFINITIVA"
   }
 ]
