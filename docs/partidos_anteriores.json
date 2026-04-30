@@ -1,5 +1,15 @@
 [
   {
+    "dia": "Martes 05/05/2026",
+    "hora": "20:30",
+    "categoria": "81312  Sen Masc 2ª F G-B",
+    "local": "Santa Lucía Suresanta (35022181)",
+    "visitante": "Vito Valsequillo (35008831)",
+    "lugar": "Pab La Unión",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Viernes 08/05/26",
     "hora": "18:30",
     "categoria": "77934  Cad Masc S-B",
@@ -26,16 +36,6 @@
     "local": "Brains Fénix (35026104)",
     "visitante": "Clínica Dental Virmident Valsequillo MXT (35008838)",
     "lugar": "Inst Dep Pepe Armas",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
-  },
-  {
-    "dia": "Sábado 09/05/26",
-    "hora": "00:00",
-    "categoria": "Sen Masc 2ª F G-B",
-    "local": "Santa Lucía Suresanta (35022181)",
-    "visitante": "Vito Valsequillo (35008831)",
-    "lugar": "Pab La Unión",
     "origen": "Página 1",
     "jornada_tipo": "PROVISIONAL"
   }
