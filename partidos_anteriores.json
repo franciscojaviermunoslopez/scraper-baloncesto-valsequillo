@@ -1,5 +1,15 @@
 [
   {
+    "dia": "Viernes 22/05/26",
+    "hora": "00:00",
+    "categoria": "Cad Masc S-B",
+    "local": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "visitante": "Brains Fénix (35026105)",
+    "lugar": "IES Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Viernes 15/05/2026",
     "hora": "18:30",
     "categoria": "81481  Infantil Masc S-B",
@@ -7,7 +17,7 @@
     "visitante": "SBT Maspalomas (35022952)",
     "lugar": "IES Valsequillo",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Sábado 16/05/26",
@@ -17,7 +27,7 @@
     "visitante": "Clínica Dental Virmident Valsequillo  (35008840)",
     "lugar": "IES 7 Palmas",
     "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
+    "jornada_tipo": "DEFINITIVA"
   },
   {
     "dia": "Martes 05/05/2026",
