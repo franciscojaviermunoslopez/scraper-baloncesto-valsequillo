@@ -1,5 +1,15 @@
 [
   {
+    "dia": "Miércoles 20/05/26",
+    "hora": "18:45",
+    "categoria": "77945  Cad Masc S-B",
+    "local": "Clínica Dental Virmident Valsequillo  (35008840)",
+    "visitante": "Brains Fénix (35026105)",
+    "lugar": "Inst Dep Pepe Armas",
+    "origen": "Página 1",
+    "jornada_tipo": "PROVISIONAL"
+  },
+  {
     "dia": "Viernes 15/05/2026",
     "hora": "18:30",
     "categoria": "81481  Infantil Masc S-B",
@@ -18,15 +28,5 @@
     "lugar": "IES 7 Palmas",
     "origen": "Página 1",
     "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Miércoles 20/05/26",
-    "hora": "18:45",
-    "categoria": "77945  Cad Masc S-B",
-    "local": "Clínica Dental Virmident Valsequillo  (35008840)",
-    "visitante": "Brains Fénix (35026105)",
-    "lugar": "Inst Dep Pepe Armas",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
   }
 ]
