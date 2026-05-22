@@ -1,5 +1,15 @@
 [
   {
+    "dia": "Sábado 30/05/2026",
+    "hora": "20:30",
+    "categoria": "83916  Fase Final Sen Masc",
+    "local": "Vito Valsequillo (35008831)",
+    "visitante": "CD Loyola  (35008386)",
+    "lugar": "Pab Mercadillo Valsequillo",
+    "origen": "Página 1",
+    "jornada_tipo": "DEFINITIVA"
+  },
+  {
     "dia": "Miércoles 20/05/26",
     "hora": "18:45",
     "categoria": "77945  Cad Masc S-B",
@@ -8,15 +18,5 @@
     "lugar": "Inst Dep Pepe Armas",
     "origen": "Página 1",
     "jornada_tipo": "DEFINITIVA"
-  },
-  {
-    "dia": "Sábado 30/05/2026",
-    "hora": "20:30",
-    "categoria": "83916  Fase Final Sen Masc",
-    "local": "Vito Valsequillo (35008831)",
-    "visitante": "CD Loyola  (35008386)",
-    "lugar": "Pab Mercadillo Valsequillo",
-    "origen": "Página 1",
-    "jornada_tipo": "PROVISIONAL"
   }
 ]
