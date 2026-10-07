@@ -1,0 +1,40 @@
+name: Actualizar partidos en el gestor
+
+# El scraper en Python se ha sustituido por el gestor documental del club
+# (https://gestor-documental-cb.vercel.app). Este workflow solo "despierta" al
+# gestor cada 2 horas para que lea las hojas de jornada de la FIBGC, actualice
+# la agenda, la web pública y avise por Telegram si hay cambios.
+
+on:
+  schedule:
+    - cron: "15 */2 * * *"
+  workflow_dispatch:
+    inputs:
+      forzar:
+        description: "Releer todas las hojas aunque no hayan cambiado"
+        type: boolean
+        default: false
+      resumen:
+        description: "Publicar además el resumen semanal en Telegram"
+        type: boolean
+        default: false
+
+jobs:
+  despertar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar al gestor
+        env:
+          CRON_SECRET: ${{ secrets.GESTOR_CRON_SECRET }}
+        run: |
+          set -e
+          PARAMS=""
+          if [ "${{ inputs.forzar }}" = "true" ]; then PARAMS="?forzar=1"; fi
+          if [ "${{ inputs.resumen }}" = "true" ]; then
+            if [ -n "$PARAMS" ]; then PARAMS="$PARAMS&resumen=1"; else PARAMS="?resumen=1"; fi
+          fi
+          curl --fail --silent --show-error --max-time 290 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "https://gestor-documental-cb.vercel.app/api/cron/partidos$PARAMS" | tee resultado.json
+          echo
+          python3 -c "import json;d=json.load(open('resultado.json'));print(f\"hojas: {len(d['hojas'])} · nuevos: {d['nuevos']} · cambios: {d['cambios']} · errores: {d['errores']}\")"
